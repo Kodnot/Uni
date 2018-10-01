@@ -1,0 +1,15 @@
+StringTokenizer for string splitting
+Scanner -> stringStream?
+Collator -> locale-sensitive string comparer
+printf turi overloads imančius locale
+
+%10.2f (digits.digits float)
+%5d (digits decimal)
+%-12s (intendation string)
+
+Unconventional netbeans shortcuts:
+ctrl + hover to show method header
+ctrl + shift + space to show documentation
+
+LD1:
+	Kodą galima pateikti githube?
