@@ -21,25 +21,30 @@ import studijosKTU.ScreenKTU;
  */
 public class IllegalAliens extends ScreenKTU {
 
-    private static final int gameSize = 20;
+    private static final int gameSize = 34;
     private static final int gameStartRow = 1;
     private static final int gameStartCol = 1;
     private static final int gameSleepTime = 80;
     private static final int targetSpawnDelay = 2;
+
+    private static final char bombChar = (char) 0x2202;
+    private static final char targetChar = '卐';
+    private static final char projectileChar = '*';
+
     private Spaceship ship;
     private List<Projectile> projectiles;
     private List<Target> targets;
 
-    private int turn;
-    private boolean gameEnded;
+    private int turn = 0;
+    private int killCount = 0;
+    private int bombCount = 3;
+    private boolean gameEnded = false;
 
     public IllegalAliens() {
-        super(36, gameSize + 2);
+        super(28, gameSize + 2);
         ship = new Spaceship(new Point(gameSize / 2, gameSize));
         projectiles = new ArrayList<>();
         targets = new ArrayList<>();
-        gameEnded = false;
-        turn = 0;
         drawBoard();
     }
 
@@ -48,16 +53,17 @@ public class IllegalAliens extends ScreenKTU {
         if (turn % targetSpawnDelay == 0) {
             spawnTargets(1);
         }
+
         adjustTargetVelocities(ship.getHeadPos());
         advanceMovingEntities(projectiles);
-        // Collisions are handled twice to avoid enemies skipping projectiles
-        handleEntityCollisions();
+        boolean playerCollided = handleEntityCollisions();
         if (turn % 2 == 0) {
             advanceMovingEntities(targets);
         }
 
-        discardOutOfBoundsEntities(); // TODO: Probs won't be needed now
-        boolean playerCollided = handleEntityCollisions();
+        discardOutOfBoundsEntities();
+        // Collisions are handled twice to avoid enemies skipping projectiles
+        playerCollided |= handleEntityCollisions();
 
         if (playerCollided) {
             gameEnded = true;
@@ -68,9 +74,14 @@ public class IllegalAliens extends ScreenKTU {
     }
 
     final void drawBoard() {
+        setBackColor(Color.BLACK);
+        setFontColor(Color.getHSBColor(127, 1.0f, 0.5f));
+        fillBorder(0, 0, gameSize + 2, gameSize + 2, (char)0x2593);
+        
         setBackColor(Color.GREEN);
         setFontColor(Color.white);
-        print(0, 0, "F*CK ALIENS");
+        fillRect(0, 0, 1, gameSize + 2);
+        print(0, 0, String.format("F*CK ALIENS! Turn:%d, Kills:%d, ∂:%d", turn + 1, killCount, bombCount));
         for (int i = 0; i < gameSize; i++) {
             for (int j = 0; j < gameSize; j++) {
                 setColors(Color.LIGHT_GRAY, Color.RED);
@@ -87,15 +98,15 @@ public class IllegalAliens extends ScreenKTU {
         for (Projectile proj : projectiles) {
             Point pos = proj.getPosition();
             setColors(Color.LIGHT_GRAY, Color.RED);
-            print(pos.y, pos.x, '*');
+            print(pos.y, pos.x, projectileChar);
         }
 
         // Draw targets
         setForeground(Color.green);
         for (Target target : targets) {
             Point pos = target.getPosition();
-            setColors(Color.LIGHT_GRAY, Color.green);
-            print(pos.y, pos.x, '#');
+            setColors(Color.LIGHT_GRAY, Color.getHSBColor(127, 1.0f, 0.5f));
+            print(pos.y, pos.x, targetChar);
         }
         refresh(gameSleepTime);
     }
@@ -110,7 +121,7 @@ public class IllegalAliens extends ScreenKTU {
         }
 
         // Only handle given keys
-        if (!"adws e".contains(String.valueOf(ch))) {
+        if (!"adws ef".contains(String.valueOf(ch))) {
             return;
         }
 
@@ -138,6 +149,13 @@ public class IllegalAliens extends ScreenKTU {
             case ' ':
                 generateProjectile();
                 break;
+            case 'f':
+                if (bombCount > 0) {
+                    detonateExplosion(ship.getHeadPos(), 3);
+                    return;
+                } else {
+                    break;
+                }
         }
         playTurn();
     }
@@ -172,6 +190,21 @@ public class IllegalAliens extends ScreenKTU {
         projectiles.add(proj);
     }
 
+    private void detonateExplosion(Point source, int radius) {
+        bombCount--;
+        for (Iterator<Target> targetsIt = targets.iterator(); targetsIt.hasNext();) {
+            Target target = targetsIt.next();
+            Point targetPos = target.getPosition();
+            if (Math.abs(targetPos.x - source.x) <= radius && Math.abs(targetPos.y - source.y) <= radius) {
+                targetsIt.remove();
+                killCount++;
+            }
+        }
+
+        fillRect(source.y - radius, source.x - radius, radius * 2 + 1, radius * 2 + 1, bombChar);
+        refresh();
+    }
+
     private void advanceMovingEntities(List<? extends MovingEntity> entities) {
         for (MovingEntity entity : entities) {
             entity.applyVelocity();
@@ -185,6 +218,7 @@ public class IllegalAliens extends ScreenKTU {
                     && pos.y >= gameStartRow && pos.y < gameStartRow + gameSize;
         }).collect(Collectors.toList());
 
+        // TODO: Targets will never be out of bounds, at least at the moment.
         targets = targets.stream().filter(entity -> {
             Point pos = entity.getPosition();
             return pos.x >= gameStartCol && pos.x < gameStartCol + gameSize
@@ -220,13 +254,18 @@ public class IllegalAliens extends ScreenKTU {
         // Handle projectile - target collisions
         for (Iterator<Projectile> it = projectiles.iterator(); it.hasNext();) {
             Projectile proj = it.next();
+            // A projectile can destroy multiple enemies on the same cell
+            boolean collided = false;
             for (Iterator<Target> targetsIt = targets.iterator(); targetsIt.hasNext();) {
                 Target target = targetsIt.next();
                 if (target.getPositionX() == proj.getPositionX() && target.getPositionY() == proj.getPositionY()) {
                     targetsIt.remove();
-                    it.remove();
-                    break;
+                    collided = true;
+                    killCount++;
                 }
+            }
+            if (collided) {
+                it.remove();
             }
         }
 
@@ -240,10 +279,10 @@ public class IllegalAliens extends ScreenKTU {
     }
 
     private void showDeathScreen() {
-        clearAll(Color.BLACK);
         setBackColor(Color.BLACK);
         setFontColor(Color.RED);
-        print(gameSize / 2, 2, "YOU DED");
+        fillRect(0, 0, 1, gameSize + 2);
+        print(0, 0, String.format("You DED! Turn:%d, Kills:%d", turn + 1, killCount));
 
         refresh();
     }
@@ -268,6 +307,11 @@ public class IllegalAliens extends ScreenKTU {
         for (Target target : targets) {
             int xDiff = target.getPositionX() - dest.x;
             int yDiff = target.getPositionY() - dest.y;
+
+            // Edge case where I'm on tom of an enemy
+            if (xDiff == 0 && yDiff == 0) {
+                continue;
+            }
 
             if (Math.abs(xDiff) > Math.abs(yDiff)) {
                 target.setXVelocity(-(xDiff / Math.abs(xDiff)));

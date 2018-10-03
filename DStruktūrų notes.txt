@@ -13,3 +13,11 @@ ctrl + shift + space to show documentation
 
 LD1:
 	Kodą galima pateikti githube?
+	
+	IllegalAliens TODO:
++		Implement a nicer border
++		Score & turn counters, show on death screen as well
+		Difficulty scaling
++		BOOOOOOM
+
++	Fix boom (It can currently destroy walls)
