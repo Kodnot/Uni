@@ -6,23 +6,19 @@
 package illegalaliens;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import studijosKTU.ScreenKTU;
 
 /**
  *
  * @author Kodnot
- */ 
+ */
 public class IllegalAliens extends ScreenKTU {
 
     private static final int gameSize = 20;
@@ -34,6 +30,8 @@ public class IllegalAliens extends ScreenKTU {
     private List<Projectile> projectiles;
     private List<Target> targets;
 
+    private int turn;
+
     private boolean gameEnded;
 
     public IllegalAliens() {
@@ -42,27 +40,29 @@ public class IllegalAliens extends ScreenKTU {
         projectiles = new ArrayList<>();
         targets = new ArrayList<>();
         gameEnded = false;
+        turn = 0;
         drawBoard();
     }
 
-    public void play() {
-        int frame = 0;
-        while (true) {
-            drawBoard();
-            if (frame % targetSpawnDelay == 0) {
-                spawnTargets(1);
-            }
-            advanceMovingEntities();
-            discardOutOfBoundsEntities();
-            boolean playerCollided = handleEntityCollisions();
-
-            if (playerCollided) {
-                gameEnded = true;
-                showDeathScreen();
-                return;
-            }
-            frame++;
+    public void playTurn() {
+        turn++;
+        if (turn % targetSpawnDelay == 0) {
+            spawnTargets(1);
         }
+        advanceMovingEntities(projectiles);
+        if (turn % 2 == 0) {
+            advanceMovingEntities(targets);
+        }
+
+        discardOutOfBoundsEntities(); // TODO: Probs won't be needed now
+        boolean playerCollided = handleEntityCollisions();
+
+        if (playerCollided) {
+            gameEnded = true;
+            showDeathScreen();
+            return;
+        }
+        drawBoard();
     }
 
     final void drawBoard() {
@@ -78,7 +78,7 @@ public class IllegalAliens extends ScreenKTU {
 
         // Draw spaceship
         Point shipPosition = ship.getHeadPos();
-        print(shipPosition.y, shipPosition.x, '^');
+        print(shipPosition.y, shipPosition.x, getSpaceshipSymbol(ship));
 
         // Draw projectiles
         setForeground(Color.red);
@@ -98,7 +98,7 @@ public class IllegalAliens extends ScreenKTU {
         refresh(gameSleepTime);
     }
 
-    public void keyTyped(KeyEvent ke) {
+    public void keyReleased(KeyEvent ke) {
         char ch = ke.getKeyChar();
         System.out.println("Paspaustas klavišas " + ch);
 
@@ -107,33 +107,37 @@ public class IllegalAliens extends ScreenKTU {
             return;
         }
 
+        // Only handle given keys
+        if (!"adws e".contains(String.valueOf(ch))) {
+            return;
+        }
+
         switch (ch) {
             case 'a':
-                // TODO: Move to enum?
                 if (ship.getHeadPosX() - 1 >= gameStartCol) {
-                    ship.moveHorizontally(-1);
+                    ship.move(Direction.LEFT);
                 }
                 break;
             case 'd':
                 if (ship.getHeadPosX() + 1 < gameStartCol + gameSize) {
-                    ship.moveHorizontally(1);
+                    ship.move(Direction.RIGHT);
                 }
                 break;
             case 'w':
                 if (ship.getHeadPosY() - 1 >= gameStartRow) {
-                    ship.moveVertically(-1);
+                    ship.move(Direction.UP);
                 }
                 break;
             case 's':
                 if (ship.getHeadPosY() + 1 < gameStartRow + gameSize) {
-                    ship.moveVertically(1);
+                    ship.move(Direction.DOWN);
                 }
                 break;
             case ' ':
                 generateProjectile();
                 break;
         }
-        drawBoard();
+        playTurn();
     }
 
     /**
@@ -141,21 +145,34 @@ public class IllegalAliens extends ScreenKTU {
      */
     public static void main(String[] args) {
         IllegalAliens game = new IllegalAliens();
-        game.play();
+        game.playTurn();
     }
 
     private void generateProjectile() {
-        Projectile proj = new Projectile(new Point(ship.getHeadPosX(), ship.getHeadPosY() - 1), 0, -1);
-        projectiles.add(proj);        
-    }
-
-    private void advanceMovingEntities() {
-        for (Projectile proj : projectiles) {
-            proj.applyVelocity();
+        Projectile proj;
+        switch (ship.getDirection()) {
+            case UP:
+                proj = new Projectile(new Point(ship.getHeadPosX(), ship.getHeadPosY()), 0, -1);
+                break;
+            case LEFT:
+                proj = new Projectile(new Point(ship.getHeadPosX(), ship.getHeadPosY()), -1, 0);
+                break;
+            case DOWN:
+                proj = new Projectile(new Point(ship.getHeadPosX(), ship.getHeadPosY()), 0, 1);
+                break;
+            case RIGHT:
+                proj = new Projectile(new Point(ship.getHeadPosX(), ship.getHeadPosY()), 1, 0);
+                break;
+            default:
+                return;
         }
 
-        for (Target target : targets) {
-            target.applyVelocity();
+        projectiles.add(proj);
+    }
+
+    private void advanceMovingEntities(List<? extends MovingEntity> entities) {
+        for (MovingEntity entity : entities) {
+            entity.applyVelocity();
         }
     }
 
@@ -218,5 +235,21 @@ public class IllegalAliens extends ScreenKTU {
             }
         }*/
         refresh();
+    }
+
+    private char getSpaceshipSymbol(Spaceship ship) {
+
+        switch (ship.getDirection()) {
+            case UP:
+                return '^';
+            case DOWN:
+                return 'v';
+            case LEFT:
+                return '<';
+            case RIGHT:
+                return '>';
+            default:
+                return 'o';
+        }
     }
 }
