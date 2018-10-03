@@ -31,7 +31,6 @@ public class IllegalAliens extends ScreenKTU {
     private List<Target> targets;
 
     private int turn;
-
     private boolean gameEnded;
 
     public IllegalAliens() {
@@ -49,7 +48,10 @@ public class IllegalAliens extends ScreenKTU {
         if (turn % targetSpawnDelay == 0) {
             spawnTargets(1);
         }
+        adjustTargetVelocities(ship.getHeadPos());
         advanceMovingEntities(projectiles);
+        // Collisions are handled twice to avoid enemies skipping projectiles
+        handleEntityCollisions();
         if (turn % 2 == 0) {
             advanceMovingEntities(targets);
         }
@@ -192,7 +194,21 @@ public class IllegalAliens extends ScreenKTU {
 
     private void spawnTargets(int targetCount) {
         Random r = new Random();
-        r.ints(targetCount, gameStartCol, gameStartCol + gameSize).forEach(x -> targets.add(new Target(new Point(x, gameStartRow), 0, 1)));
+        for (int i = 0; i < targetCount; ++i) {
+            boolean sideChoice = r.nextBoolean();
+            int x, y;
+            if (sideChoice) {
+                // Spawn left/right
+                y = r.nextInt(gameStartRow + gameSize) + gameStartRow;
+                x = r.nextBoolean() ? gameStartCol : gameStartCol + gameSize - 1;
+            } else {
+                // Spawn top/bottom
+                x = r.nextInt(gameStartCol + gameSize) + gameStartCol;
+                y = r.nextBoolean() ? gameStartRow : gameStartRow + gameSize - 1;
+            }
+            // Initially velocities are 0
+            targets.add(new Target(new Point(x, y), 0, 0));
+        }
     }
 
     /**
@@ -206,7 +222,7 @@ public class IllegalAliens extends ScreenKTU {
             Projectile proj = it.next();
             for (Iterator<Target> targetsIt = targets.iterator(); targetsIt.hasNext();) {
                 Target target = targetsIt.next();
-                if (target.getPositionX() == proj.getPositionX() && (target.getPositionY() == proj.getPositionY() || target.getPositionY() == proj.getPositionY() + 1)) {
+                if (target.getPositionX() == proj.getPositionX() && target.getPositionY() == proj.getPositionY()) {
                     targetsIt.remove();
                     it.remove();
                     break;
@@ -227,13 +243,8 @@ public class IllegalAliens extends ScreenKTU {
         clearAll(Color.BLACK);
         setBackColor(Color.BLACK);
         setFontColor(Color.RED);
-        print(gameSize / 2, 2, "YOU DED");/*
-        for (int i = 0; i < gameSize; i++) {
-            for (int j = 0; j < gameSize; j++) {
-                setColors(Color.LIGHT_GRAY, Color.RED);
-                print(gameStartRow + i, gameStartCol + j, ' ');
-            }
-        }*/
+        print(gameSize / 2, 2, "YOU DED");
+
         refresh();
     }
 
@@ -250,6 +261,21 @@ public class IllegalAliens extends ScreenKTU {
                 return '>';
             default:
                 return 'o';
+        }
+    }
+
+    private void adjustTargetVelocities(Point dest) {
+        for (Target target : targets) {
+            int xDiff = target.getPositionX() - dest.x;
+            int yDiff = target.getPositionY() - dest.y;
+
+            if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                target.setXVelocity(-(xDiff / Math.abs(xDiff)));
+                target.setYVelocity(0);
+            } else {
+                target.setXVelocity(0);
+                target.setYVelocity(-(yDiff / Math.abs(yDiff)));
+            }
         }
     }
 }

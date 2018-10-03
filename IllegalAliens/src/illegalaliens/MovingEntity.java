@@ -14,10 +14,10 @@ import java.awt.Point;
  */
 class MovingEntity {
 
-    private Point currentPosition;
-    private Point previousPosition;
-    private int xVelocity;
-    private int yVelocity;
+    protected Point currentPosition;
+    protected Point previousPosition;
+    protected int xVelocity;
+    protected int yVelocity;
 
     public MovingEntity(Point cPos, int xVelocity, int yVelocity) {
         this.currentPosition = cPos;

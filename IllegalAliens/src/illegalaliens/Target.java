@@ -17,4 +17,11 @@ class Target extends MovingEntity {
         super(cPos, xVelocity, yVelocity);
     }
 
+    public void setXVelocity(int value) {
+        xVelocity = value;
+    }
+
+    public void setYVelocity(int value) {
+        yVelocity = value;
+    }
 }
