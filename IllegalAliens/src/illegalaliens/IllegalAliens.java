@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package illegalaliens;
 
 import java.awt.Color;
@@ -21,11 +16,10 @@ import studijosKTU.ScreenKTU;
  */
 public class IllegalAliens extends ScreenKTU {
 
-    private static final int gameSize = 34;
+    private static final int gameSize = 35;
     private static final int gameStartRow = 1;
     private static final int gameStartCol = 1;
     private static final int gameSleepTime = 80;
-    private static final int targetSpawnDelay = 2;
 
     private static final char bombChar = (char) 0x2202;
     private static final char targetChar = '卐';
@@ -38,21 +32,46 @@ public class IllegalAliens extends ScreenKTU {
     private int turn = 0;
     private int killCount = 0;
     private int bombCount = 3;
+    private int targetSpawnDelay = 10;
     private boolean gameEnded = false;
 
     public IllegalAliens() {
         super(28, gameSize + 2);
+        initialize();
+    }
+
+    public void initialize() {
         ship = new Spaceship(new Point(gameSize / 2, gameSize));
         projectiles = new ArrayList<>();
         targets = new ArrayList<>();
+        turn = 0;
+        killCount = 0;
+        bombCount = 3;
+        gameEnded = false;
         drawBoard();
     }
 
+    public void addKill() {
+        killCount++;
+        // Add a bomb every 20th kill
+        if (killCount % 40 == 0) {
+            bombCount++;
+        }
+    }
+
+    private void scaleDifficulty(int turn) {
+        targetSpawnDelay = 10 - turn / 50;
+        if (targetSpawnDelay < 1) {
+            targetSpawnDelay = 1;
+        }
+    }
+
     public void playTurn() {
-        turn++;
+        scaleDifficulty(turn);
         if (turn % targetSpawnDelay == 0) {
             spawnTargets(1);
         }
+        turn++;
 
         adjustTargetVelocities(ship.getHeadPos());
         advanceMovingEntities(projectiles);
@@ -76,8 +95,8 @@ public class IllegalAliens extends ScreenKTU {
     final void drawBoard() {
         setBackColor(Color.BLACK);
         setFontColor(Color.getHSBColor(127, 1.0f, 0.5f));
-        fillBorder(0, 0, gameSize + 2, gameSize + 2, (char)0x2593);
-        
+        fillBorder(0, 0, gameSize + 2, gameSize + 2, (char) 0x2593);
+
         setBackColor(Color.GREEN);
         setFontColor(Color.white);
         fillRect(0, 0, 1, gameSize + 2);
@@ -117,7 +136,11 @@ public class IllegalAliens extends ScreenKTU {
 
         // Player cannot move if he ded
         if (gameEnded) {
-            return;
+            if (ch == 'r') {
+                initialize();
+            } else {
+                return;
+            }
         }
 
         // Only handle given keys
@@ -165,7 +188,6 @@ public class IllegalAliens extends ScreenKTU {
      */
     public static void main(String[] args) {
         IllegalAliens game = new IllegalAliens();
-        game.playTurn();
     }
 
     private void generateProjectile() {
@@ -197,7 +219,7 @@ public class IllegalAliens extends ScreenKTU {
             Point targetPos = target.getPosition();
             if (Math.abs(targetPos.x - source.x) <= radius && Math.abs(targetPos.y - source.y) <= radius) {
                 targetsIt.remove();
-                killCount++;
+                addKill();
             }
         }
 
@@ -261,7 +283,7 @@ public class IllegalAliens extends ScreenKTU {
                 if (target.getPositionX() == proj.getPositionX() && target.getPositionY() == proj.getPositionY()) {
                     targetsIt.remove();
                     collided = true;
-                    killCount++;
+                    addKill();
                 }
             }
             if (collided) {

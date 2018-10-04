@@ -17,7 +17,13 @@ LD1:
 	IllegalAliens TODO:
 +		Implement a nicer border
 +		Score & turn counters, show on death screen as well
-		Difficulty scaling
++		Difficulty scaling
 +		BOOOOOOM
 
-+	Fix boom (It can currently destroy walls)
++		Fix boom (It can currently destroy walls)
+		Make the top border look nicer
+		Maybe switch to specific spawnpoints?
++		Cleanup (there are some unused methods, like MoveHorizontaly in Spaceship
+		Add background image?
++		Restart button?
+	
