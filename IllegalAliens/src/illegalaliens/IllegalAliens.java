@@ -24,6 +24,7 @@ public class IllegalAliens extends ScreenKTU {
     private static final char bombChar = (char) 0x2202;
     private static final char targetChar = '卐';
     private static final char projectileChar = '*';
+    private static final String gameTitle = "NAZI RUSH";
 
     private Spaceship ship;
     private List<Projectile> projectiles;
@@ -100,7 +101,7 @@ public class IllegalAliens extends ScreenKTU {
         setBackColor(Color.GREEN);
         setFontColor(Color.white);
         fillRect(0, 0, 1, gameSize + 2);
-        print(0, 0, String.format("F*CK ALIENS! Turn:%d, Kills:%d, ∂:%d", turn + 1, killCount, bombCount));
+        print(0, 0, String.format("%s Turn:%d, Kills:%d, ∂:%d", gameTitle, turn + 1, killCount, bombCount));
         for (int i = 0; i < gameSize; i++) {
             for (int j = 0; j < gameSize; j++) {
                 setColors(Color.LIGHT_GRAY, Color.RED);

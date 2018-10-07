@@ -26,4 +26,6 @@ LD1:
 +		Cleanup (there are some unused methods, like MoveHorizontaly in Spaceship
 		Add background image?
 +		Restart button?
+
+	LD1C individualūs metodai: 239	Liuberskis Audrius	IFF-7/13	16	20	21	5	11
 	
