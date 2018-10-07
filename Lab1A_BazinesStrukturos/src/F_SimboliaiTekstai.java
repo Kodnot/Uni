@@ -24,7 +24,7 @@ public class F_SimboliaiTekstai {
 //        met6Scanner();
 //        met7FormatuotiDuomenis();
         memifyString("Yo mamma is so fat, that she wouldn't fit into a modern PC heap.");
-        removeEnglishVowels("Tai yra sakinys su ir lietuviškom, ir angliškom balsėmis");
+//        removeEnglishVowels("Tai yra sakinys su ir lietuviškom, ir angliškom balsėmis");
     }
 // -----------------------------------------------------------------------------
     /**
@@ -158,7 +158,7 @@ public class F_SimboliaiTekstai {
     /**
      * Atliekate savo pasirinktus demo skaičiavimus su tekstais ir simboliais
      */
-    void memifyString(String input){
+    void memifyString(String input) {
         System.out.println("===== metodas6 ... ");
         StringBuilder sb = new StringBuilder(input);
         for (int i = 0; i < input.length(); ++i) {
@@ -167,7 +167,6 @@ public class F_SimboliaiTekstai {
             }
         }
         System.out.println(sb);
-        System.out.println("Patikrinkite, ar tokių rezultatų tikėjotės ??\n");
     }
 // -----------------------------------------------------------------------------
     /**
@@ -177,7 +176,6 @@ public class F_SimboliaiTekstai {
         System.out.println("===== metodas7 ... ");
         String result = input.replaceAll("[aieou]", "*");
         System.out.println(result);
-        System.out.println("Patikrinkite, ar tokių rezultatų tikėjotės ??\n");
     }
 // -----------------------------------------------------------------------------
     public static void main(String[] args) {

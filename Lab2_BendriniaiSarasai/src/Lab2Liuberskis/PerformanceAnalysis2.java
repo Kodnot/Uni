@@ -44,6 +44,7 @@ public class PerformanceAnalysis2 {
         System.gc();
         System.gc();
         System.gc();
+        long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         long t2 = System.nanoTime();
 
         // Analysis
@@ -58,7 +59,8 @@ public class PerformanceAnalysis2 {
         }
         long t4 = System.nanoTime();
         Ks.ouf("%7d %7.4f %7.4f %7.4f %7.4f\n", count, (t1 - t0) / 1e9, (t2 - t1) / 1e9, (t3 - t2) / 1e9, (t4 - t3) / 1e9);
-        Ks.oun("Elementų suma: " + sum);
+        Ks.oun("(Ignore) Elementų suma: " + sum);
+        Ks.ouf("Naudota atminties: %d (%1.2f MB)\n", usedMemory, usedMemory / 1000000f);
     }
 
     void runSystematicAnalysis() {
@@ -82,7 +84,7 @@ public class PerformanceAnalysis2 {
             tk.finish("LinkedListIndexOf");
             tk.seriesFinish();
         }
-        Ks.oun("Elementų suma: " + sum);
+        Ks.oun("(Ignore) Elementų suma: " + sum);
     }
 
     void executeLogic() {
