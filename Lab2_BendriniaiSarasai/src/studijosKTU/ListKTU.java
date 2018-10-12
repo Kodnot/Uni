@@ -11,9 +11,12 @@
  */
 package studijosKTU;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Koreguota 2015-09-18
@@ -228,6 +231,9 @@ public class ListKTU<E extends Comparable<E>>
             old = prev.next;
             prev.next = prev.next.next;
         }
+        if (old == last) {
+            last = first.findNode(size - 2);
+        }
         size--;
         return old.element;
     }
@@ -273,6 +279,24 @@ public class ListKTU<E extends Comparable<E>>
         } else {
             start.next = end;
         }
+        // If we removed the previous last, update it
+        if (end == null) {
+            last = start;
+        }
+    }
+
+    public ListKTU<E> subList(int fromIndex, int toIndex) {
+        if (fromIndex < 0 || fromIndex >= size || toIndex < 0 || toIndex > size) {
+            throw new IndexOutOfBoundsException();
+        }
+        ListKTU<E> rez = new ListKTU<>();
+        
+        Node<E> start = first.findNode(fromIndex);
+        for (int i = 0; i < (toIndex - fromIndex); ++i) {
+            rez.add(start.element);
+            start = start.next;
+        }
+        return rez;
     }
 
     /**

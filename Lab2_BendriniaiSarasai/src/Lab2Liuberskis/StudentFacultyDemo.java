@@ -7,6 +7,7 @@ package Lab2Liuberskis;
 
 import java.util.Locale;
 import studijosKTU.Ks;
+import studijosKTU.ListKTU;
 import studijosKTU.ListKTUx;
 
 /**
@@ -20,11 +21,12 @@ public class StudentFacultyDemo {
     private void executeLogic() {
 //        demoStudents();
         formTestStudentList();
-        printList();
-        extendList();
-        demoFacultyMethods();
-        demoSorting();
-        demoCustomMethods();
+//        printList();
+//        extendList();
+//        demoFacultyMethods();
+//        demoSorting();
+//        demoCustomMethods();
+        demoTask();
     }
 
     void demoStudents() {
@@ -146,21 +148,29 @@ public class StudentFacultyDemo {
     private void demoCustomMethods() {
         testStudents.load("ban.txt");
         testStudents.println("Bandomasis rinkinys");
-        
+
         testStudents.addLast(new Student("Cudrius Liuberskis 811111111 5 10"));
         testStudents.println("Pridėjus prie pabaigos");
-        
+
         testStudents.removeLastOccurrence(new Student("Cudrius Liuberskis 811111111 5 10"));
         testStudents.println("Pašalinus last occurrence");
-        
+
         testStudents.removeRange(1, 5);
         testStudents.println("Pašalinus [1, 5) el.");
-        
+
         testStudents.removeRange(0, 4);
         testStudents.println("Pašalinus [0,4) el.");
-        
+
         testStudents.removeRange(0, 4);
         testStudents.println("Pašalinus [0,4) el.");
+    }
+
+    private void demoTask() {
+        testStudents.load("ban.txt");
+        testStudents.println("Bandomasis rinkinys new");
+        
+        ListKTU<Student> sublist = testStudents.subList(0, 0);
+        sublist.forEach(x -> Ks.oun(x));
     }
 
 }

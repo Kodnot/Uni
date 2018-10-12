@@ -16,7 +16,7 @@ import studijosKTU.ScreenKTU;
  */
 public class IllegalAliens extends ScreenKTU {
 
-    private static final int gameSize = 35;
+    private static final int gameSize = 34;
     private static final int gameStartRow = 1;
     private static final int gameStartCol = 1;
     private static final int gameSleepTime = 80;
