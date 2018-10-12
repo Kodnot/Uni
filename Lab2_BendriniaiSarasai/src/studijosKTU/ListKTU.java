@@ -169,17 +169,20 @@ public class ListKTU<E extends Comparable<E>>
         // I'll leave this impl here just in case, but Node class is nested, thus I 
         // have access to its private members
 //        Node<E> old;
+//        Node<E> newNode;
 //        if (k == 0) {
 //            old = first;
 //            first = new Node(e, first.next);
-//            if (size == 1) {
-//                last = first;
-//            }
-//        }
-//        else {
+//            newNode = first;
+//        } else {
 //            Node<E> prev = first.findNode(k - 1);
 //            old = prev.next;
 //            prev.next = new Node(e, prev.next.next);
+//            newNode = prev.next;
+//        }
+//
+//        if (k == size - 1) {
+//            last = newNode;
 //        }
 //        return old.element;
     }
@@ -261,14 +264,13 @@ public class ListKTU<E extends Comparable<E>>
         if (fromIndex < 0 || fromIndex >= size || toIndex < 0 || toIndex > size) {
             throw new IndexOutOfBoundsException();
         }
-        
+
         Node<E> start = first.findNode(fromIndex - 1);
         Node<E> end = first.findNode(toIndex);
-        
+
         if (fromIndex == 0) {
             first = end;
-        }
-        else {
+        } else {
             start.next = end;
         }
     }
