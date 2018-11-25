@@ -29,3 +29,11 @@ LD1:
 
 	LD1C individualūs metodai: 239	Liuberskis Audrius	IFF-7/13	16	20	21	5	11
 	
+Cancer žodynėlis:
+	DP-Medis - Binary search tree (BST)
+	AVL-Medis - AVL-tree
+
+LD2:
+	Lab2WindowFX custom funkcijos su buttons siejamos in handleButtons on line 283
+	Baigta 1 individuali dalis
+	

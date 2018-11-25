@@ -60,3 +60,5 @@ nb-configuration.xml
 ##########################
 .DS_Store
 misc/
+/JavaApplication3/nbproject/private/
+/JavaApplication2/nbproject/private/

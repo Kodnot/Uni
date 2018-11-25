@@ -1,0 +1,12 @@
+Audrius    Liuberskis 811111111     2 6.0 
+AAAudrius  Liuberskis 811111111     2 9.0 
+Budrius    Liuberskis 811111111     2 10.0 
+BBudrius   Liuberskis 811111111     1 7.0 
+Cudrius    Liuberskis 811111111     5 10.0 
+BBBudrius  Liuberskis 811111111     5 4.0 
+Donatas    AKuprys    866666666     1 6.2 
+Donatas    DKuprys    866666666     2 9.3 
+Donatas    BKuprys    866666666     3 6.2 
+Eonatas    ZKuprys    866666666     4 7.2 
+EEonatas   AKuprys    866666666     5 8.1 
+EEEonatas  Kuprys     866666666     6 6.0 
