@@ -17,7 +17,7 @@ public final class Student implements KTUable<Student> {
     private static final int minCourse = 1;
     private static final int maxCourse = 6; // max 4 bachelor's and 2 master's years
     private static final String idCode = "SD";
-    private static int studentNrCounter = 1;
+    private static int studentNrCounter = 1000;
 
     private String name;
     private String surname;

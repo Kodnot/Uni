@@ -36,10 +36,10 @@ public class StudentTests {
         Student a5 = new Student("Klinton Blazy 851777544 3 4.9");
         Student a6 = new Student.StudentBuilder().buildRandom();
         Student a7 = new Student.StudentBuilder().buildRandom();
-        Student a8 = new Student.StudentBuilder().buildRandom();
-        Student a9 = new Student("Kunt Kerston 898477544 1 8.9");
+        Student a8 = new Student("Kunt Kerston 898477544 1 8.9");
+        Student a9 = new Student.StudentBuilder().buildRandom();
 
-        Student[] studentArray = {a9, a7, a8, a5, a1, a6};
+        Student[] studentArray = {a9, a7, a8, a5, a1, a4, a6, a6};
 
         Ks.oun("Studentų Aibė:");
         SortedSetADTx<Student> studentSet = new BstSetKTUx(new Student());
@@ -50,6 +50,27 @@ public class StudentTests {
         }
         Ks.oun("");
         Ks.oun(studentSet.toVisualizedString(""));
+
+        Ks.oun("Studentų aibės poaibis iki elemento " + a5.toString());
+        SetADT<Student> studHeadSet = studentSet.headSet(a5);
+        for (Student a : studHeadSet) {
+            Ks.oun(a);
+        }
+        Ks.oun("");
+
+        Ks.oun("Studentų aibės poaibis tarp lemento " + a5.toString() + " ir elemento " + a8.toString());
+        SetADT<Student> studSubdSet = studentSet.subSet(a5, a8);
+        for (Student a : studSubdSet) {
+            Ks.oun(a);
+        }
+        Ks.oun("");
+
+        Ks.oun("Studentų aibės poaibis nue elemento " + a8.toString());
+        SetADT<Student> studTailSet = studentSet.tailSet(a8);
+        for (Student a : studTailSet) {
+            Ks.oun(a);
+        }
+        Ks.oun("");
 
         SortedSetADTx<Student> studentSetCopy
                 = (SortedSetADTx<Student>) studentSet.clone();
@@ -103,6 +124,9 @@ public class StudentTests {
         }
         Ks.ounn(studentSet3.toVisualizedString(""));
 
+        SetADT<String> studSet4 = StudentAccounting.fullNames(studentArray);
+        Ks.oun("Pasikartojantys studentų vardai+pavardės:\n" + studSet4.toString());
+
         Ks.oun("Studentų aibė su iteratoriumi:");
         Ks.oun("");
         for (Student a : studentSet3) {
@@ -112,9 +136,24 @@ public class StudentTests {
         Ks.oun("");
         Ks.oun("Studentų aibė su atvirkštiniu iteratoriumi:");
         Ks.oun("");
-        Iterator iter = studentSet3.descendingIterator();
+        Iterator<Student> iter = studentSet3.descendingIterator();
         while (iter.hasNext()) {
             Ks.oun(iter.next());
+        }
+
+        Ks.oun("");
+        Ks.oun("Šalinimas su iteratoriumi:");
+        Ks.oun("");
+        Ks.ounn(studentSet3.toVisualizedString(""));
+        iter = studentSet3.descendingIterator();
+        while (iter.hasNext()) {
+            Student val = iter.next();
+            Ks.oun("Apdorojama " + val.toString());
+            if (val.compareTo(a4) == 0 || val.compareTo(a5) == 0 || val.compareTo(a8) == 0) {
+                Ks.oun("Pašalinta " + val.toString());
+                iter.remove();
+                Ks.ounn(studentSet3.toVisualizedString(""));
+            }
         }
 
         Ks.oun("");
@@ -129,14 +168,11 @@ public class StudentTests {
         Ks.oun("Studentų aibė DP-medyje:");
         studentSet.load("Duomenys\\ban.txt");
         Ks.ounn(studentSet.toVisualizedString(""));
-        Ks.oun("Išsiaiškinkite, kodėl medis augo tik į vieną pusę.");
 
         Ks.oun("");
         Ks.oun("Studentų aibė AVL-medyje:");
         studentSet3.load("Duomenys\\ban.txt");
         Ks.ounn(studentSet3.toVisualizedString(""));
 
-        SetADT<String> autoAibe4 = StudentAccounting.fullNames(studentArray);
-        Ks.oun("Pasikartojantys studentų vardai+pavardės:\n" + autoAibe4.toString());
     }
 }

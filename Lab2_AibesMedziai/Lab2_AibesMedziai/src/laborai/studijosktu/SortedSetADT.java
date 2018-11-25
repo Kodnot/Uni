@@ -22,7 +22,7 @@ public interface SortedSetADT<E> extends SetADT<E> {
     SetADT<E> subSet(E element1, E element2);
 
     /**
-     * Grąžinamas aibės poaibis iki elemento data.
+     * Grąžinamas aibės poaibis nuo elemento data. 
      *
      * @param element - Aibės elementas.
      * @return Grąžinamas aibės poaibis nuo elemento data.

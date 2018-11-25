@@ -166,7 +166,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
     public int getHeight() {
         return getHeightRecursive(root);
     }
-    
+
     int getHeightRecursive(BstNode<E> node) {
         if (node == null) {
             return 0;
@@ -349,18 +349,27 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
     }
 
     /**
-     * Grąžinamas aibės poaibis iki elemento.
+     * Grąžinamas aibės poaibis iki elemento. (exclusive)
      *
      * @param element - Aibės elementas.
      * @return Grąžinamas aibės poaibis iki elemento.
      */
     @Override
-    public SetADT<E> headSet(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti headSet()");
+    public SortedSetADT<E> headSet(E element) {
+        SortedSetADT<E> rez = new BstSetKTU<E>();
+        for (E el : this) {
+            if (el.compareTo(element) < 0) {
+                rez.add(el);
+            } else {
+                break;
+            }
+        }
+        return rez;
     }
 
     /**
-     * Grąžinamas aibės poaibis nuo elemento element1 iki element2.
+     * Grąžinamas aibės poaibis nuo elemento element1 (inclusive) iki element2
+     * (inclusive).
      *
      * @param element1 - pradinis aibės poaibio elementas.
      * @param element2 - galinis aibės poaibio elementas.
@@ -368,18 +377,34 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
      */
     @Override
     public SetADT<E> subSet(E element1, E element2) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti subSet()");
+        SortedSetADT<E> rez = new BstSetKTU<E>();
+        for (E el : this) {
+            if (el.compareTo(element1) < 0) {
+                continue;
+            } else if (el.compareTo(element2) <= 0) {
+                rez.add(el);
+            } else {
+                break;
+            }
+        }
+        return rez;
     }
 
     /**
-     * Grąžinamas aibės poaibis iki elemento.
+     * Grąžinamas aibės poaibis iki elemento (exclusive).
      *
      * @param element - Aibės elementas.
      * @return Grąžinamas aibės poaibis nuo elemento.
      */
     @Override
     public SetADT<E> tailSet(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti tailSet()");
+        SortedSetADT<E> rez = new BstSetKTU<E>();
+        for (E el : this) {
+            if (el.compareTo(element) > 0) {
+                rez.add(el);
+            }
+        }
+        return rez;
     }
 
     /**
@@ -416,6 +441,8 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         private boolean ascending;
         // Nurodo einamojo medžio elemento tėvą. Reikalingas šalinimui.
         private BstNode<E> parent = root;
+        // F*ck you fight me
+        private BstNode<E> lastRemoved;
 
         IteratorKTU(boolean ascendingOrder) {
             this.ascending = ascendingOrder;
@@ -432,6 +459,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
             if (!stack.empty()) {
                 // Grąžinamas paskutinis į steką patalpintas elementas
                 BstNode<E> n = stack.pop();
+                lastRemoved = n;
                 // Atsimenama tėvo viršunė. Reikia remove() metodui
                 parent = (!stack.empty()) ? stack.peek() : root;
                 BstNode node = (ascending) ? n.right : n.left;
@@ -446,7 +474,47 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("Studentams reikia realizuoti remove()");
+            if (stack.empty()) {
+                return;
+            }
+
+            // Edge case for removing root, as in that situation parent is the last returned element
+            if (parent == lastRemoved) {
+                root = removeRec(parent, parent.element);
+            } else {
+                removeRec(parent, lastRemoved.element);
+            }
+            size--;
+        }
+
+        private BstNode<E> removeRec(BstNode<E> rt, E val) {
+            if (rt == null) {
+                return rt;
+            }
+
+            if (val.compareTo(rt.element) < 0) {
+                rt.left = removeRec(rt.left, val);
+            } else if (val.compareTo(rt.element) > 0) {
+                rt.right = removeRec(rt.right, val);
+            } else {
+                if (rt.left == null) {
+                    return rt.right;
+                } else if (rt.right == null) {
+                    return rt.left;
+                }
+
+                // Node witht two children
+                if (ascending) {
+                    rt.element = getMax(rt.left).element;
+                    rt.left = removeRec(rt.left, rt.element);
+
+                } else {
+                    rt.element = getMin(rt.right).element;
+                    rt.right = removeRec(rt.right, rt.element);
+                }
+            }
+
+            return rt;
         }
 
         private void toStack(BstNode<E> n) {
