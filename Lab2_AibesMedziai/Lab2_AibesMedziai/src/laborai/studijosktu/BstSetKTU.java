@@ -163,6 +163,17 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         return node;
     }
 
+    public int getHeight() {
+        return getHeightRecursive(root);
+    }
+    
+    int getHeightRecursive(BstNode<E> node) {
+        if (node == null) {
+            return 0;
+        }
+        return Math.max(getHeightRecursive(node.left), getHeightRecursive(node.right)) + 1;
+    }
+
     private E get(E element) {
         if (element == null) {
             throw new IllegalArgumentException("Element is null in get(E element)");
@@ -420,7 +431,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         public E next() {
             if (!stack.empty()) {
                 // Grąžinamas paskutinis į steką patalpintas elementas
-                 BstNode<E> n = stack.pop();
+                BstNode<E> n = stack.pop();
                 // Atsimenama tėvo viršunė. Reikia remove() metodui
                 parent = (!stack.empty()) ? stack.peek() : root;
                 BstNode node = (ascending) ? n.right : n.left;

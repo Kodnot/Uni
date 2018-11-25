@@ -12,6 +12,8 @@ public interface SetADT<E> extends Iterable<E> {
 
     // Grąžinamas aibėje esančių elementų kiekis.
     int size();
+    
+    int getHeight();
 
     // Išvaloma aibė.
     void clear();

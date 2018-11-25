@@ -290,8 +290,9 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
             treeEfficiency();
         } else if (source.equals(paneButtons.getButtons().get(4))) {
             treeRemove();
-        } else if (source.equals(paneButtons.getButtons().get(5))
-                || source.equals(paneButtons.getButtons().get(6))) {
+        } else if (source.equals(paneButtons.getButtons().get(5))) {
+            treeGetHeight();
+        } else if (source.equals(paneButtons.getButtons().get(6))) {
             KsFX.setFormatStartOfLine(true);
             KsFX.ounerr(taOutput, MESSAGES.getString("msg1"));
             KsFX.setFormatStartOfLine(false);
@@ -340,7 +341,7 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
         KsFX.setFormatStartOfLine(true);
         Student auto = StudentGenerator.getFromBase();
         studSet.add(auto);
-        paneParam1.getTfOfTable().get(2).setText(String.valueOf(--sizeOfLeftSubSet));   
+        paneParam1.getTfOfTable().get(2).setText(String.valueOf(--sizeOfLeftSubSet));
         KsFX.oun(taOutput, auto, MESSAGES.getString("msg7"));
         KsFX.oun(taOutput, studSet.toVisualizedString(tfDelimiter.getText()));
         KsFX.setFormatStartOfLine(false);
@@ -368,6 +369,12 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
         } else {
             KsFX.oun(taOutput, studSet, MESSAGES.getString("msg8"));
         }
+        KsFX.setFormatStartOfLine(false);
+    }
+
+    private void treeGetHeight() {
+        KsFX.setFormatStartOfLine(true);
+        KsFX.oun(taOutput, String.format("Medžio aukštis: %d", studSet.getHeight()));
         KsFX.setFormatStartOfLine(false);
     }
 
