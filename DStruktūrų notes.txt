@@ -33,15 +33,4 @@ Cancer žodynėlis:
 	DP-Medis - Binary search tree (BST)
 	AVL-Medis - AVL-tree
 
-LD2:
-	Lab2WindowFX custom funkcijos su buttons siejamos in handleButtons on line 283
-	Baigta 1 individuali dalis
-	Done medžio aukščio skaičiavimas
-	
-	
-	TODO:
-		Į greitaveiką pridėt metodus, kuruos man lieps implementint
-		Sometimes, for some fucking reason, AVLSet remove fails with a nullrefexception in doubleRightRotate->leftRotate
-			This happens in cases where a rotate should not happen at all. Maybe something wrong with height updating?
-			Should be fixed now, was due to me calling removeMax(), which does not properly update heights
 	

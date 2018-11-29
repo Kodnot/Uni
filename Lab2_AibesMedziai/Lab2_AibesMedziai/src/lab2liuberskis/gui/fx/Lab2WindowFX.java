@@ -293,9 +293,7 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
         } else if (source.equals(paneButtons.getButtons().get(5))) {
             treeGetHeight();
         } else if (source.equals(paneButtons.getButtons().get(6))) {
-            KsFX.setFormatStartOfLine(true);
-            KsFX.ounerr(taOutput, MESSAGES.getString("msg1"));
-            KsFX.setFormatStartOfLine(false);
+            customEfficiency();
         }
     }
 
@@ -409,6 +407,37 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
         new Thread(() -> gt.pradetiTyrima(), "Greitaveikos_tyrimo_gija").start();
     }
 
+    private void customEfficiency() {
+        KsFX.setFormatStartOfLine(true);
+        KsFX.oun(taOutput, "", MESSAGES.getString("msg2"));
+        paneBottom.setDisable(true);
+        menuFX.setDisable(true);
+
+        IndividualiuGreitaveikosTyrimas gt = new IndividualiuGreitaveikosTyrimas();
+
+        // Si gija paima rezultatus is greitaveikos tyrimo gijos ir isveda 
+        // juos i taOutput. Gija baigia darbą kai gaunama FINISH_COMMAND     
+        new Thread(() -> {
+            try {
+                String result;
+                while (!(result = gt.getResultsLogger().take())
+                        .equals(GreitaveikosTyrimas.FINISH_COMMAND)) {
+                    KsFX.ou(taOutput, result);
+                    gt.getSemaphore().release();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            gt.getSemaphore().release();
+            paneBottom.setDisable(false);
+            menuFX.setDisable(false);
+        }, "Greitaveikos_rezultatu_gija").start();
+
+        //Sioje gijoje atliekamas greitaveikos tyrimas
+        new Thread(() -> gt.pradetiTyrima(), "Greitaveikos_tyrimo_gija").start();
+    }
+
     private void readTreeParameters() throws MyException {
         // Truputėlis kosmetikos..
         for (int i = 0; i < 2; i++) {
@@ -450,7 +479,7 @@ public class Lab2WindowFX extends BorderPane implements EventHandler<ActionEvent
     }
 
     protected void disableButtons(boolean disable) {
-        for (int i : new int[]{1, 2, 4, 5, 6}) {
+        for (int i : new int[]{1, 2, 4, 5}) {
             if (i < paneButtons.getButtons().size() && paneButtons.getButtons().get(i) != null) {
                 paneButtons.getButtons().get(i).setDisable(disable);
             }
