@@ -174,5 +174,56 @@ public class StudentTests {
         studentSet3.load("Duomenys\\ban.txt");
         Ks.ounn(studentSet3.toVisualizedString(""));
 
+        AVLSetRemoveTests();
     }
+
+    public static void AVLSetRemoveTests() {
+        Student a0 = new Student.StudentBuilder().buildRandom();
+        Student a1 = new Student("John", "Snow", "844455978", 2, 7.9);
+        Student a2 = new Student.StudentBuilder().buildRandom();
+        Student a3 = new Student.StudentBuilder().buildRandom();
+        Student a4 = new Student("Anthony Anderson 899977544 2 8.9");
+        Student a5 = new Student("Klinton Blazy 851777544 3 4.9");
+        Student a6 = new Student.StudentBuilder().buildRandom();
+
+        Student[] studentArray = {a2, a1, a3, a4}; // Mind the order
+
+        SortedSetADTx<Student> studentSet = new AvlSetKTUx(new Student());
+
+        for (Student a : studentArray) {
+            studentSet.add(a);
+            Ks.oun("Aibė papildoma: " + a + ". Jos dydis: " + studentSet.size());
+        }
+        
+        Ks.oun("AVLSet remove testai");
+        Ks.oun(studentSet.toVisualizedString(""));
+        Ks.oun("Išmetam kairį vaiką ir žiūrim balansą: (right right case)");
+        studentSet.remove(a1);
+        Ks.oun(studentSet.toVisualizedString(""));
+        
+        studentSet.add(a0);
+        Ks.oun(studentSet.toVisualizedString(""));
+        Ks.oun("Išmetam dešinį vaiką ir žiūrim balansą: (left left case)");
+        studentSet.remove(a4);
+        Ks.oun(studentSet.toVisualizedString(""));
+        
+        studentSet.add(a1);
+        Ks.oun(studentSet.toVisualizedString(""));
+        Ks.oun("Išmetam dešinį vaiką ir žiūrim balansą: (right left case)");
+        studentSet.remove(a3);
+        Ks.oun(studentSet.toVisualizedString(""));
+        
+        studentSet.remove(a2);
+        studentSet.add(a3);
+        studentSet.add(a2);
+        Ks.oun(studentSet.toVisualizedString(""));
+        Ks.oun("Išmetame kairį vaiką ir žiūrime balansą (left right case)");
+        studentSet.remove(a0);
+        Ks.oun(studentSet.toVisualizedString(""));
+        
+        Ks.oun("Išmetame dešinį vaiką, niekas nebalansuojama:");
+        studentSet.remove(a3);
+        Ks.oun(studentSet.toVisualizedString(""));
+    }
+
 }

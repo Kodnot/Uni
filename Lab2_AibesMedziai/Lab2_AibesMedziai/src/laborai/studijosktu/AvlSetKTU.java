@@ -74,11 +74,87 @@ public class AvlSetKTU<E extends Comparable<E>> extends BstSetKTU<E>
      */
     @Override
     public void remove(E element) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti remove(E element)");
+        if (element == null) {
+            throw new IllegalArgumentException("Element is null in remove(E element)");
+        }
+
+        root = removeRecursive(element, (AVLNode<E>) root);
     }
 
-    private AVLNode<E> removeRecursive(E element, AVLNode<E> n) {
-        throw new UnsupportedOperationException("Studentams reikia realizuoti removeRecursive(E element, AVLNode<E> n)");
+    private AVLNode<E> removeRecursive(E element, AVLNode<E> node) {
+        if (node == null) {
+            return node;
+        }
+        // Medyje ieškomas šalinamas elemento mazgas;
+        int cmp = c.compare(element, node.element);
+
+        if (cmp < 0) {
+            node.setLeft(removeRecursive(element, node.getLeft()));
+        } else if (cmp > 0) {
+            node.setRight(removeRecursive(element, node.getRight()));
+        } else if (node.left != null && node.right != null) {
+            /* Atvejis kai šalinamas elemento mazgas turi abu vaikus.
+             Ieškomas didžiausio rakto elemento mazgas kairiajame pomedyje.
+             Galima kita realizacija kai ieškomas mažiausio rakto
+             elemento mazgas dešiniajame pomedyje. Tam yra sukurtas
+             metodas getMin(E element);
+             */
+            BstNode<E> nodeMax = getMax(node.left);
+            /* Didžiausio rakto elementas (TIK DUOMENYS!) perkeliamas į šalinamo
+             elemento mazgą. Pats mazgas nėra pašalinamas - tik atnaujinamas;
+             */
+            node.element = nodeMax.element;
+            // Surandamas ir pašalinamas maksimalaus rakto elemento mazgas;
+            node.left = removeRecursive(node.element, node.getLeft());
+            // Kiti atvejai
+
+//            Ks.oun(this.toVisualizedString(""));
+        } else {
+            node = (node.left != null) ? node.getLeft() : node.getRight();
+            size--;
+
+//            Ks.oun(this.toVisualizedString(""));
+        }
+
+        // Return early in case I won't need to balance
+        if (node == null) {
+            return node;
+        }
+
+        node.height = Math.max(height(node.getLeft()), height(node.getRight())) + 1;
+        // Remove done, now backtracking and balancing
+        // Find the first unbalanced node
+        int leftHeight = height(node.getLeft());
+        int rightHeight = height(node.getRight());
+        if (Math.abs(leftHeight - rightHeight) > 1) {
+            AVLNode<E> z = node;
+            AVLNode<E> y = (leftHeight > rightHeight ? z.getLeft() : z.getRight());
+            int yLeftHeight = height(y.getLeft());
+            int yRightHeight = height(y.getRight());
+            AVLNode<E> x = (yLeftHeight > yRightHeight ? y.getLeft() : y.getRight());
+
+            // y is left child of z
+            if (leftHeight > rightHeight) {
+                // x is left child of y, left left case
+                if (yLeftHeight > yRightHeight) {
+                    node = rightRotation(z);
+                } // x is right child of y, left right case
+                else {
+                    node = doubleRightRotation(z); // Works?
+                }
+            } // y is right child of z
+            else {
+                // x is left child of y, right left case
+                if (yLeftHeight > yRightHeight) {
+                    node = doubleLeftRotation(z); // Works
+                } // x is right child of y, right right case
+                else {
+                    node = leftRotation(z);
+                }
+            }
+        }
+
+        return node;
     }
 
 //==============================================================================
