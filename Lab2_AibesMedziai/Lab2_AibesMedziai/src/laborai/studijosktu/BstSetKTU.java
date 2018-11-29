@@ -97,6 +97,20 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         root = addRecursive(element, root);
     }
 
+    /**
+     * Adds all of the elements in the specified collection to this set
+     *
+     * @param set
+     */
+    public void addAll(BstSetKTU<? extends E> set) {
+        if (set == null) {
+            throw new IllegalArgumentException("Set is null in BstSetKTU<? extends E> set");
+        }
+        for (E el : set) {
+            this.add(el);
+        }
+    }
+
     private BstNode<E> addRecursive(E element, BstNode<E> node) {
         if (node == null) {
             size++;
@@ -112,6 +126,25 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         }
 
         return node;
+    }
+
+    /**
+     * *
+     * Removes from this set all of its elements that are contained in the
+     * specified collection.
+     *
+     * @param set
+     * @return
+     */
+    public boolean removeAll(BstSetKTU<? extends E> set) {
+        if (set == null) {
+            throw new IllegalArgumentException("Set is null in removeAll(BstSetKTU<? extends E> set)");
+        }
+        int initialSize = this.size;
+        for (E obj : set) {
+            this.remove(obj);
+        }
+        return initialSize != this.size;
     }
 
     /**
@@ -220,6 +253,48 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
      */
     BstNode<E> getMax(BstNode<E> node) {
         return get(node, true);
+    }
+
+    /**
+     * Retrieves and removes the last (higherst) leement, or returns null if
+     * this set is empty.
+     *
+     * @return
+     */
+    public E pollLast() {
+        if (this.size == 0) {
+            return null;
+        }
+        E rez = getMax(root).element;
+        root = removeMax(root);
+        size--;
+        return rez;
+    }
+
+    /**
+     * Returns the least element in this set strictly greater than the given
+     * element, or null if there is no such element
+     *
+     * @param element
+     * @return
+     */
+    public E higher(E element) {
+        return higherRecursive(element, root);
+    }
+
+    E higherRecursive(E element, BstNode<E> node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.element.compareTo(element) <= 0) {
+            return higherRecursive(element, node.right);
+        } else {
+            E deeperRez = higherRecursive(element, node.left);
+            if (deeperRez == null) {
+                return node.element;
+            }
+            return node.element.compareTo(deeperRez) < 0 ? node.element : deeperRez;
+        }
     }
 
     /**
@@ -369,7 +444,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
 
     /**
      * Grąžinamas aibės poaibis nuo elemento element1 (inclusive) iki element2
-     * (inclusive).
+     * (exclusive).
      *
      * @param element1 - pradinis aibės poaibio elementas.
      * @param element2 - galinis aibės poaibio elementas.
@@ -381,7 +456,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
         for (E el : this) {
             if (el.compareTo(element1) < 0) {
                 continue;
-            } else if (el.compareTo(element2) <= 0) {
+            } else if (el.compareTo(element2) < 0) {
                 rez.add(el);
             } else {
                 break;
@@ -391,7 +466,7 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
     }
 
     /**
-     * Grąžinamas aibės poaibis iki elemento (exclusive).
+     * Grąžinamas aibės poaibis nuo elemento (inclusive).
      *
      * @param element - Aibės elementas.
      * @return Grąžinamas aibės poaibis nuo elemento.
@@ -400,7 +475,26 @@ public class BstSetKTU<E extends Comparable<E>> implements SortedSetADT<E>, Clon
     public SetADT<E> tailSet(E element) {
         SortedSetADT<E> rez = new BstSetKTU<E>();
         for (E el : this) {
-            if (el.compareTo(element) > 0) {
+            if (el.compareTo(element) >= 0) {
+                rez.add(el);
+            }
+        }
+        return rez;
+    }
+
+    /**
+     * Returns a subset whose elements are greater than (or equal to, if
+     * inclusive is true) fromElement
+     *
+     * @param element
+     * @param inclusive
+     * @return
+     */
+    public SetADT<E> tailSet(E element, boolean inclusive) {
+        SortedSetADT<E> rez = new BstSetKTU<E>();
+        for (E el : this) {
+            int cmp = el.compareTo(element);
+            if (cmp > 0 || (cmp == 0 && inclusive)) {
                 rez.add(el);
             }
         }
