@@ -16,7 +16,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
 
     boolean isEmpty();
 
-    boolean contains(T element);
+    boolean contains(Object element);
 
     Object[] toArray();
 
@@ -46,15 +46,15 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
     T get(int index);
 
     T set(int index, T element);
-//
+
 //    void add(int index, T element);
 //
 //    T remove(int index);
-
+    
     // Search Operations
-//    int indexOf(Object o);
-//
-//    int lastIndexOf(Object o);
+    int indexOf(Object o);
+
+    int lastIndexOf(Object o);
 
     // List iterators and view operations skipped
 }

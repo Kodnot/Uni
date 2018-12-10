@@ -241,4 +241,38 @@ public class UnrolledLinkedListTest {
             assertEquals(newElements[i], newVal);
         }
     }
+
+    @Test
+    public void testIndexOf() {
+        // Arrange
+        System.out.println("indexOf");
+        Integer[] elements = new Integer[]{1, 2, 3, 4, 5, 6};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act, Assert
+        for (int i = 0; i < elements.length; ++i) {
+            assertEquals(elements[i] - 1, instance.indexOf(elements[i]));
+        }
+    }
+
+    @Test
+    public void testLastIndexOf() {
+        // Arrange
+        System.out.println("lastIndexOf");
+        Integer[] elements = new Integer[]{1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act, Assert
+        for (int i = 0; i < elements.length; ++i) {
+            assertEquals(elements[i] * 2 - 1, instance.lastIndexOf(elements[i]));
+        }
+    }
 }

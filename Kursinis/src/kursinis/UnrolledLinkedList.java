@@ -136,17 +136,8 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
     }
 
     @Override
-    public boolean contains(T element) {
-        Node cur = startPos;
-        while (cur != null) {
-            for (int i = 0; i < cur.elementCount; ++i) {
-                if (cur.elements[i].equals(element)) {
-                    return true;
-                }
-            }
-            cur = cur.next;
-        }
-        return false;
+    public boolean contains(Object element) {
+        return this.indexOf(element) >= 0;
     }
 
     @Override
@@ -231,6 +222,39 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         }
 
         return null;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        Node cur = startPos;
+        int index = 0;
+        while (cur != null) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                if (cur.elements[i].equals(o)) {
+                    return index;
+                }
+                index++;
+            }
+            cur = cur.next;
+        }
+        return -1;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        Node cur = startPos;
+        int index = 0;
+        int rezIndex = -1;
+        while (cur != null) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                if (cur.elements[i].equals(o)) {
+                    rezIndex = index;
+                }
+                index++;
+            }
+            cur = cur.next;
+        }
+        return rezIndex;
     }
 
     protected class Node {
