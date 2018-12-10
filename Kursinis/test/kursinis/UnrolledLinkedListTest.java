@@ -202,4 +202,43 @@ public class UnrolledLinkedListTest {
         System.out.println("\nPrintElements() results: ");
         instance.printElements();
     }
+
+    @Test
+    public void testGet() {
+        // Arrange
+        System.out.println("get");
+        Integer[] elements = new Integer[]{1, 2, 3, 4, 5, 6};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act, Assert
+        for (int i = 0; i < elements.length; ++i) {
+            assertEquals(elements[i], instance.get(i));
+        }
+    }
+
+    @Test
+    public void testSet() {
+        // Arrange
+        System.out.println("set");
+        Integer[] elements = new Integer[]{1, 2, 3, 4, 5, 6};
+        Integer[] newElements = new Integer[]{7, 8, 9, 10, 11, 12};
+
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act, Assert
+        for (int i = 0; i < elements.length; ++i) {
+            Integer oldVal = instance.set(i, newElements[i]);
+            Integer newVal = instance.get(i);
+            assertEquals(elements[i], oldVal);
+            assertEquals(newElements[i], newVal);
+        }
+    }
 }

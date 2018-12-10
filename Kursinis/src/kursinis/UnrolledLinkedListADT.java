@@ -45,7 +45,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
     // Positional Access Operations
     T get(int index);
 
-//    T set(int index, T element);
+    T set(int index, T element);
 //
 //    void add(int index, T element);
 //

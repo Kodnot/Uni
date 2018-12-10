@@ -201,6 +201,38 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         System.out.println("");
     }
 
+    @Override
+    public T get(int index) {
+        Node cur = startPos;
+        int curIndex = 0;
+        while (cur != null) {
+            if (index - curIndex < cur.elementCount) {
+                return (T) cur.elements[index - curIndex];
+            }
+            curIndex += cur.elementCount;
+            cur = cur.next;
+        }
+
+        return null;
+    }
+
+    @Override
+    public T set(int index, T element) {
+        Node cur = startPos;
+        int curIndex = 0;
+        while (cur != null) {
+            if (index - curIndex < cur.elementCount) {
+                T oldElement = (T) cur.elements[index - curIndex];
+                cur.elements[index - curIndex] = element;
+                return oldElement;
+            }
+            curIndex += cur.elementCount;
+            cur = cur.next;
+        }
+
+        return null;
+    }
+
     protected class Node {
 
         protected Node next;
