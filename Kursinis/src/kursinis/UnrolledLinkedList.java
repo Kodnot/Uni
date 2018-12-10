@@ -74,7 +74,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
     }
 
     @Override
-    public void remove(T element) {
+    public void remove(Object element) {
         Node cur = startPos;
         boolean found = false;
         while (cur != null && !found) {
@@ -150,15 +150,28 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
     }
 
     @Override
+    public Object[] toArray() {
+        final Object[] rez = new Object[elementCount];
+        int index = 0;
+        Node cur = startPos;
+        while (cur != null) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                rez[index++] = (T) cur.elements[i];
+            }
+            cur = cur.next;
+        }
+        return rez;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public T[] toArray(Class<T> type) {
-        @SuppressWarnings("unchecked")
+    public <T> T[] toArray(Class<T> type) {
         final T[] rez = (T[]) Array.newInstance(type, elementCount);
         int index = 0;
         Node cur = startPos;
         while (cur != null) {
             for (int i = 0; i < cur.elementCount; ++i) {
-                rez[index++] = (T)cur.elements[i];
+                rez[index++] = (T) cur.elements[i];
             }
             cur = cur.next;
         }

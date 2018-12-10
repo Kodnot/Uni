@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
  * @author Kodnot
  */
 public class UnrolledLinkedListTest {
-    
+
     public UnrolledLinkedListTest() {
     }
 
@@ -23,7 +23,7 @@ public class UnrolledLinkedListTest {
         // Arrange
         System.out.println("isEmpty");
         UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
-        
+
         // Act, Assert
         assertEquals(true, instance.isEmpty());
         instance.add(2);
@@ -45,7 +45,7 @@ public class UnrolledLinkedListTest {
             assertEquals(instance.size(), i + 1);
         }
     }
-    
+
     @Test
     public void testClear() {
         // Arrange
@@ -58,7 +58,7 @@ public class UnrolledLinkedListTest {
         // Assert
         assertEquals(0, instance.size());
     }
-    
+
     @Test
     public void testAdd() {
         // Arrange
@@ -78,7 +78,7 @@ public class UnrolledLinkedListTest {
         assertArrayEquals(elements, rez);
         assertEquals(3, nodeCount);
     }
-    
+
     @Test
     public void testRemove() {
         // Arrange
@@ -86,7 +86,7 @@ public class UnrolledLinkedListTest {
         Integer[] elements = new Integer[]{1, 3, 2, 4, 5};
         UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
         Integer[] expected = new Integer[]{4, 5};
-        
+
         for (int i = 0; i < elements.length; ++i) {
             instance.add(elements[i]);
         }
@@ -97,14 +97,14 @@ public class UnrolledLinkedListTest {
             instance.remove(el);
             instance.printElements();
         }
-        
+
         Integer[] rez = instance.toArray(Integer.class);
 
         // Assert
         assertArrayEquals(expected, rez);
         assertEquals(instance.getNodeCount(), 1);
     }
-    
+
     @Test
     public void testContains() {
         // Arrange
@@ -113,7 +113,7 @@ public class UnrolledLinkedListTest {
         UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
         int[] testCases = new int[]{1, 4, 6, 9, 16};
         boolean[] expected = new boolean[]{true, true, true, false, false};
-        
+
         for (int i = 0; i < elements.length; ++i) {
             instance.add(elements[i]);
         }
@@ -125,9 +125,9 @@ public class UnrolledLinkedListTest {
             assertEquals(expected[i], rez);
         }
     }
-    
+
     @Test
-    public void testToArray() {
+    public void testToArray_0args() {
         // Arrange
         System.out.println("toArray");
         Integer[] elements = new Integer[]{1, 3, 2, 4};
@@ -138,10 +138,68 @@ public class UnrolledLinkedListTest {
             instance.add(elements[i]);
         }
         instance.printElements();
-        
+
+        Object[] rez = instance.toArray();
+
+        // Assert
+        assertArrayEquals(elements, rez);
+    }
+
+    @Test
+    public void testToArray_Class() {
+        // Arrange
+        System.out.println("toArray");
+        Integer[] elements = new Integer[]{1, 3, 2, 4};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(2);
+
+        // Act
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+        instance.printElements();
+
         Integer[] rez = instance.toArray(Integer.class);
 
         // Assert
         assertArrayEquals(elements, rez);
+    }
+
+    @Test
+    public void testGetNodeCount() {
+        // Arrange
+        System.out.println("getNodeCount");
+        Integer[] elements = new Integer[]{1, 3, 2, 4};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+        int expectedNodeCount = 2;
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act
+        int nodeCount = instance.getNodeCount();
+
+        // Assert
+        assertEquals(nodeCount, expectedNodeCount);
+    }
+
+    @Test
+    public void testPrintElements() {
+        // Arrange
+        System.out.println("printElements");
+        Integer[] elements = new Integer[]{1, 3, 2, 4, 6, 7};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+
+        // Act, Assert
+        System.out.print("Inserted elements: ");
+        for (int el : elements) {
+            System.out.print(el + " ");
+        }
+        System.out.println("\nPrintElements() results: ");
+        instance.printElements();
     }
 }
