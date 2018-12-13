@@ -193,40 +193,8 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             return found;
         }
 
-        int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
-        if (movedDataCount <= 0) {
-            return found;
-        }
+        balanceAfterRemove(cur);
 
-        movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
-        int i = cur.elementCount, j = 0;
-        for (; j < movedDataCount; ++j) {
-            cur.elements[i++] = cur.next.elements[j];
-            if (j + movedDataCount < cur.next.elementCount) {
-                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
-            }
-        }
-
-        // Finish shifting elements in next node
-        for (; j < cur.next.elementCount; ++j) {
-            if (j + movedDataCount < cur.next.elementCount) {
-                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
-            }
-        }
-        cur.next.elementCount -= movedDataCount;
-        cur.elementCount += movedDataCount;
-
-        if (cur.next.elementCount < (maxElementCount + 1) / 2) {
-            // Merge nodes
-            for (j = 0; j < cur.next.elementCount; ++j) {
-                cur.elements[i++] = cur.next.elements[j];
-            }
-            cur.elementCount += cur.next.elementCount;
-            if (cur.next == endPos) {
-                endPos = cur;
-            }
-            cur.next = cur.next.next;
-        }
         return found;
     }
 
@@ -264,9 +232,15 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             return removedElement;
         }
 
+        balanceAfterRemove(cur);
+
+        return (T) removedElement;
+    }
+
+    private void balanceAfterRemove(Node cur) {
         int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
         if (movedDataCount <= 0) {
-            return removedElement;
+            return;
         }
 
         movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
@@ -298,8 +272,6 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             }
             cur.next = cur.next.next;
         }
-
-        return (T) removedElement;
     }
 
     @Override
