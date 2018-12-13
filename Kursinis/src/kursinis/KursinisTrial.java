@@ -5,6 +5,7 @@
  */
 package kursinis;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -28,10 +29,9 @@ public class KursinisTrial {
         final int unrolledArraySize = 6;
         // You can see the memory consumption of unrolled list becomes less with array size
         // Set to ~6
-        
+
         // TODO: Check with random insertion, because now only half of all the arrays in unrolled list 
         // are utilized.
-
         // Unrolled linked list
         UnrolledLinkedListADT<Integer> unrolledList = new UnrolledLinkedList<>(unrolledArraySize);
         IntStream.range(0, dataSize).forEach(i -> unrolledList.add(i));
@@ -45,8 +45,7 @@ public class KursinisTrial {
         System.out.println(String.format("Java linked list naudota atminties: (%1.2f MB)\n",
                 MemStats.getUsedMegabytes() - sideMemoryConsumedMegabytes));
         javaLinkedList.clear();
-                
-                
+
         System.out.println(MemStats.getUsedMegabytes());
     }
 

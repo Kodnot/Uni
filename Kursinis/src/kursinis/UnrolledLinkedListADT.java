@@ -47,8 +47,8 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
 
     T set(int index, T element);
 
-//    void add(int index, T element);
-//
+    void add(int index, T element);
+
 //    T remove(int index);
     
     // Search Operations

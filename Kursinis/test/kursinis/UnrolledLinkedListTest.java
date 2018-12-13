@@ -60,7 +60,7 @@ public class UnrolledLinkedListTest {
     }
 
     @Test
-    public void testAdd() {
+    public void testAdd_GenericType() {
         // Arrange
         System.out.println("add");
         Integer[] elements = new Integer[]{1, 3, 2, 4, 5, 6};
@@ -77,6 +77,32 @@ public class UnrolledLinkedListTest {
         // Assert
         assertArrayEquals(elements, rez);
         assertEquals(3, nodeCount);
+    }
+
+    @Test
+    public void testAdd_int_GenericType() {
+        // Arrange
+        System.out.println("add at index");
+        Integer[] elements = new Integer[]{1, 3, 2, 4, 5, 6};
+        Integer[] expected = new Integer[]{1, 0, 2, 3, 3, 4, 5, 1, 2, 4, 6, 5};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(i, elements[i]);
+            instance.printElements();
+        }
+
+        // Act
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i], i);
+            instance.printElements();
+        }
+        Integer[] rez = instance.toArray(Integer.class);
+
+        // Assert
+        assertArrayEquals(expected, rez);
+
+        // TODO: add a throw test
     }
 
     @Test

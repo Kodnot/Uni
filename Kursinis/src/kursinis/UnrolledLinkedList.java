@@ -55,6 +55,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         }
 
         // Insert into the end node without expanding
+        // TODO: Should this be <=?
         if (endPos.elementCount + 1 < maxElementCount) {
             endPos.elements[endPos.elementCount] = element;
             endPos.elementCount++;
@@ -69,6 +70,101 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             node.elementCount = j;
             endPos.elementCount = endPos.elementCount / 2 + 1;
             endPos.next = node;
+            endPos = node;
+        }
+    }
+
+    @Override
+    public void add(int index, T element) {
+        if (index < 0 || index > elementCount) {
+            throw new IndexOutOfBoundsException("Index has to be between 0 and list size, inclusive.");
+        }
+
+        Node cur = startPos;
+        int curIndex = 0;
+        int valIndex = 0;
+        while (cur != null) {
+            if (index - curIndex <= cur.elementCount) {
+                valIndex = index - curIndex;
+                break;
+            }
+            curIndex += maxElementCount;
+            cur = cur.next;
+        }
+
+        elementCount++;
+        // Insert into empty list
+        if (startPos == null) {
+            startPos = new Node(element);
+            endPos = startPos;
+            return;
+        }
+
+        if (cur.next != null && index - curIndex == cur.elementCount) {
+            curIndex += maxElementCount;
+            valIndex = index - curIndex;
+            cur = cur.next;
+        }
+
+        System.out.println("curIndex:" + curIndex + ", valIndex: " + valIndex + ", val:" + element);
+
+        // Insert into the current node without expanding
+        if (cur != null && cur.elementCount + 1 <= maxElementCount) {
+            for (int i = cur.elementCount; i > valIndex; --i) {
+                cur.elements[i] = cur.elements[i - 1];
+            }
+            cur.elements[valIndex] = element;
+
+            cur.elementCount++;
+            return;
+        }
+
+        // Insert into end (If I have a list of max size 4 [1 2 3 4], and I want to insert into the 
+        // [4] position (0-based), I'll want to set the next element in a new array
+        if (valIndex == cur.elementCount) {
+            Node node = new Node();
+            int j = 0;
+            for (int i = endPos.elementCount / 2 + 1; i < endPos.elementCount; ++i, ++j) {
+                node.elements[j] = endPos.elements[i];
+            }
+
+            node.elements[j++] = element;
+            node.elementCount = j;
+            endPos.elementCount = endPos.elementCount / 2 + 1;
+            endPos.next = node;
+            endPos = node;
+            return;
+        }
+
+        // Insert into a position in a full node
+        Node node = new Node();
+        int j = 0;
+        boolean valCopied = false;
+        for (int i = cur.elementCount / 2 + 1; i < cur.elementCount; ++i, ++j) {
+            if (i == valIndex && !valCopied) {
+                node.elements[j] = element;
+                i--;
+                valCopied = true;
+            } else {
+                node.elements[j] = cur.elements[i];
+            }
+        }
+        node.elementCount = j;
+        cur.elementCount = cur.elementCount / 2 + 1;
+        node.next = cur.next;
+        cur.next = node;
+
+        // If the inserted value was not copied to the new array, the cur array must be shifted
+        if (!valCopied) {
+            for (int i = cur.elementCount; i > valIndex; --i) {
+                cur.elements[i] = cur.elements[i - 1];
+            }
+            cur.elements[valIndex] = element;
+
+            cur.elementCount++;
+        }
+
+        if (cur == endPos) {
             endPos = node;
         }
     }
@@ -269,7 +365,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             this.elementCount = 0;
         }
 
-        protected Node(T element) {
+        protected Node(Object element) {
             this();
             elements[0] = element;
             this.elementCount = 1;
