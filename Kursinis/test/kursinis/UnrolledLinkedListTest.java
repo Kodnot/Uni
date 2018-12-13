@@ -5,6 +5,7 @@
  */
 package kursinis;
 
+import java.util.Iterator;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -330,5 +331,29 @@ public class UnrolledLinkedListTest {
 
         assertArrayEquals(expected, rez);
         assertEquals(instance.getNodeCount(), 1);
+    }
+
+    @Test
+    public void testIterator() {
+        // Arrange
+        System.out.println("iterator");
+        Integer[] elements = new Integer[]{1, 3, 2, 4, 5};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+        instance.printElements();
+        int j = 0;
+        for (Integer val : instance) {
+            assertEquals(elements[j++], val);
+        }
+
+        Iterator<Integer> it = instance.iterator();
+        while (it.hasNext()) {
+            it.remove();
+        }
+
+        assertEquals(0, instance.size());
     }
 }

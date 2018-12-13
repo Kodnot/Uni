@@ -9,7 +9,7 @@ package kursinis;
  *
  * @author audri
  */
-public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
+public interface UnrolledLinkedListADT<T> extends Iterable<T> {
 
     // Query Operations
     int size();
@@ -40,6 +40,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
     // The performance of these methods should not differ drastically from a normal linked list
     // (Same diff as observed with individual contains() or add() etc. calls)
     // TODO: Implementing a merge sort could be here could be interesting
+    // To be fair, you won't use this if you need to keep the values sorted. Inefficient.
     void clear();
 
     // Positional Access Operations
@@ -50,7 +51,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
     void add(int index, T element);
 
     T removeAt(int index);
-    
+
     // Search Operations
     int indexOf(Object o);
 

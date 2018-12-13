@@ -6,7 +6,7 @@
 package kursinis;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -396,6 +396,11 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         return rezIndex;
     }
 
+    @Override
+    public Iterator<T> iterator() {
+        return new UnrolledIterator(startPos);
+    }
+
     protected class Node {
 
         protected Node next;
@@ -412,6 +417,57 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             this();
             elements[0] = element;
             this.elementCount = 1;
+        }
+    }
+
+    /**
+     * Iterator class implementing an ascending iterator.
+     */
+    private class UnrolledIterator implements Iterator<T> {
+
+        private Node cur;
+        private int curIndex;
+
+        UnrolledIterator(Node root) {
+            cur = root;
+            curIndex = 0;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cur != null && curIndex < cur.elementCount;
+        }
+
+        @Override
+        public T next() {
+            if (cur == null) {
+                return null;
+            }
+            T rez = (T) cur.elements[curIndex++];
+            if (curIndex >= cur.elementCount) {
+                curIndex = 0;
+                cur = cur.next;
+            }
+
+            return rez;
+        }
+
+        @Override
+        public void remove() {
+            elementCount--;
+
+            for (int i = curIndex; i < cur.elementCount - 1; ++i) {
+                cur.elements[i] = cur.elements[i + 1];
+            }
+            cur.elementCount--;
+
+            // Balance if need be
+            // Nothing to balance
+            if (cur.next == null) {
+                return;
+            }
+
+            balanceAfterRemove(cur);
         }
     }
 }
