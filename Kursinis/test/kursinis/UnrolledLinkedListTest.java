@@ -84,7 +84,7 @@ public class UnrolledLinkedListTest {
         // Arrange
         System.out.println("add at index");
         Integer[] elements = new Integer[]{1, 3, 2, 4, 5, 6};
-        Integer[] expected = new Integer[]{1, 0, 2, 3, 3, 4, 5, 1, 2, 4, 6, 5};
+        Integer[] expected = new Integer[]{1, 0, 2, 3, 3, 4, 5, 1, 2, 4, 5, 6};
         UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
 
         for (int i = 0; i < elements.length; ++i) {
@@ -201,12 +201,13 @@ public class UnrolledLinkedListTest {
         for (int i = 0; i < elements.length; ++i) {
             instance.add(elements[i]);
         }
-
+        instance.printElements();
+        
         // Act
         int nodeCount = instance.getNodeCount();
 
         // Assert
-        assertEquals(nodeCount, expectedNodeCount);
+        assertEquals(expectedNodeCount, nodeCount);
     }
 
     @Test

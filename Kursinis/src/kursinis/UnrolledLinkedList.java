@@ -23,7 +23,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         startPos = null;
         endPos = null;
         elementCount = 0;
-        maxElementCount = nodeCapacity + 1;
+        maxElementCount = nodeCapacity;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
 
         // Insert into the end node without expanding
         // TODO: Should this be <=?
-        if (endPos.elementCount + 1 < maxElementCount) {
+        if (endPos.elementCount + 1 <= maxElementCount) {
             endPos.elements[endPos.elementCount] = element;
             endPos.elementCount++;
         } else {
@@ -88,7 +88,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
                 valIndex = index - curIndex;
                 break;
             }
-            curIndex += maxElementCount;
+            curIndex += cur.elementCount;
             cur = cur.next;
         }
 
@@ -100,7 +100,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             return;
         }
 
-        if (cur.next != null && index - curIndex == cur.elementCount) {
+        if (cur.next != null && index - curIndex == maxElementCount) {
             curIndex += maxElementCount;
             valIndex = index - curIndex;
             cur = cur.next;
@@ -140,7 +140,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         Node node = new Node();
         int j = 0;
         boolean valCopied = false;
-        for (int i = cur.elementCount / 2 + 1; i < cur.elementCount; ++i, ++j) {
+        for (int i = cur.elementCount / 2; i < cur.elementCount; ++i, ++j) {
             if (i == valIndex && !valCopied) {
                 node.elements[j] = element;
                 i--;
@@ -150,7 +150,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             }
         }
         node.elementCount = j;
-        cur.elementCount = cur.elementCount / 2 + 1;
+        cur.elementCount = cur.elementCount / 2;
         node.next = cur.next;
         cur.next = node;
 
@@ -195,7 +195,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             return;
         }
 
-        int movedDataCount = maxElementCount / 2 - cur.elementCount;
+        int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
         if (movedDataCount <= 0) {
             return;
         }
@@ -218,7 +218,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         cur.next.elementCount -= movedDataCount;
         cur.elementCount += movedDataCount;
 
-        if (cur.next.elementCount < maxElementCount / 2) {
+        if (cur.next.elementCount < (maxElementCount + 1) / 2) {
             // Merge nodes
             for (j = 0; j < cur.next.elementCount; ++j) {
                 cur.elements[i++] = cur.next.elements[j];
