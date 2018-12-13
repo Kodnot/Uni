@@ -117,10 +117,10 @@ public class UnrolledLinkedListTest {
             instance.add(elements[i]);
         }
         instance.printElements();
-
+        boolean found = true;
         // Act
         for (int el : new int[]{3, 2, 1}) {
-            instance.remove(el);
+            found &= instance.remove(el);
             instance.printElements();
         }
 
@@ -129,6 +129,7 @@ public class UnrolledLinkedListTest {
         // Assert
         assertArrayEquals(expected, rez);
         assertEquals(instance.getNodeCount(), 1);
+        assertEquals(true, found);
     }
 
     @Test
@@ -202,7 +203,7 @@ public class UnrolledLinkedListTest {
             instance.add(elements[i]);
         }
         instance.printElements();
-        
+
         // Act
         int nodeCount = instance.getNodeCount();
 
@@ -301,5 +302,33 @@ public class UnrolledLinkedListTest {
         for (int i = 0; i < elements.length; ++i) {
             assertEquals(elements[i] * 2 - 1, instance.lastIndexOf(elements[i]));
         }
+    }
+
+    @Test
+    public void testRemoveAt() {
+        // Arrange
+        System.out.println("removeAt");
+        Integer[] elements = new Integer[]{1, 3, 2, 4, 5};
+        Integer[] removedElements = new Integer[]{3, 2, 1};
+        UnrolledLinkedList<Integer> instance = new UnrolledLinkedList<Integer>(3);
+        Integer[] expected = new Integer[]{4, 5};
+
+        for (int i = 0; i < elements.length; ++i) {
+            instance.add(elements[i]);
+        }
+        instance.printElements();
+        int j = 0;
+
+        // Act, Assert
+        for (int el : new int[]{1, 1, 0}) {
+            Integer removedEl = instance.removeAt(el);
+            instance.printElements();
+            assertEquals(removedElements[j++], removedEl);
+        }
+
+        Integer[] rez = instance.toArray(Integer.class);
+
+        assertArrayEquals(expected, rez);
+        assertEquals(instance.getNodeCount(), 1);
     }
 }

@@ -55,7 +55,6 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         }
 
         // Insert into the end node without expanding
-        // TODO: Should this be <=?
         if (endPos.elementCount + 1 <= maxElementCount) {
             endPos.elements[endPos.elementCount] = element;
             endPos.elementCount++;
@@ -106,8 +105,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             cur = cur.next;
         }
 
-        System.out.println("curIndex:" + curIndex + ", valIndex: " + valIndex + ", val:" + element);
-
+//        System.out.println("curIndex:" + curIndex + ", valIndex: " + valIndex + ", val:" + element);
         // Insert into the current node without expanding
         if (cur != null && cur.elementCount + 1 <= maxElementCount) {
             for (int i = cur.elementCount; i > valIndex; --i) {
@@ -170,7 +168,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
     }
 
     @Override
-    public void remove(Object element) {
+    public boolean remove(Object element) {
         Node cur = startPos;
         boolean found = false;
         while (cur != null && !found) {
@@ -192,12 +190,12 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
 
         // Nothing to balance
         if (!found || cur.next == null) {
-            return;
+            return found;
         }
 
         int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
         if (movedDataCount <= 0) {
-            return;
+            return found;
         }
 
         movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
@@ -229,6 +227,79 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
             }
             cur.next = cur.next.next;
         }
+        return found;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T removeAt(int index) {
+        if (index < 0 || index >= elementCount) {
+            throw new IndexOutOfBoundsException("Index has to be between 0 (inclusive) and list size (exclusive).");
+        }
+
+        Node cur = startPos;
+        int curIndex = 0;
+        int valIndex = 0;
+        while (cur != null) {
+            if (index - curIndex < cur.elementCount) {
+                valIndex = index - curIndex;
+                break;
+            }
+            curIndex += cur.elementCount;
+            cur = cur.next;
+        }
+
+        // Remove the element
+        elementCount--;
+        T removedElement = (T) cur.elements[valIndex];
+        // Remove element
+        for (int i = valIndex; i < cur.elementCount - 1; ++i) {
+            cur.elements[i] = cur.elements[i + 1];
+        }
+        cur.elementCount--;
+
+        // Balance if need be
+        // Nothing to balance
+        if (cur.next == null) {
+            return removedElement;
+        }
+
+        int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
+        if (movedDataCount <= 0) {
+            return removedElement;
+        }
+
+        movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
+        int i = cur.elementCount, j = 0;
+        for (; j < movedDataCount; ++j) {
+            cur.elements[i++] = cur.next.elements[j];
+            if (j + movedDataCount < cur.next.elementCount) {
+                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
+            }
+        }
+
+        // Finish shifting elements in next node
+        for (; j < cur.next.elementCount; ++j) {
+            if (j + movedDataCount < cur.next.elementCount) {
+                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
+            }
+        }
+        cur.next.elementCount -= movedDataCount;
+        cur.elementCount += movedDataCount;
+
+        if (cur.next.elementCount < (maxElementCount + 1) / 2) {
+            // Merge nodes
+            for (j = 0; j < cur.next.elementCount; ++j) {
+                cur.elements[i++] = cur.next.elements[j];
+            }
+            cur.elementCount += cur.next.elementCount;
+            if (cur.next == endPos) {
+                endPos = cur;
+            }
+            cur.next = cur.next.next;
+        }
+
+        return (T) removedElement;
     }
 
     @Override

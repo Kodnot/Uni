@@ -34,7 +34,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
     // Modification Operations
     void add(T element);
 
-    void remove(Object element);
+    boolean remove(Object element);
 
     // Skipped bulk modifications because they are boring and not required for the demo
     // The performance of these methods should not differ drastically from a normal linked list
@@ -49,7 +49,7 @@ public interface UnrolledLinkedListADT<T> /*extends Iterable<T>*/ {
 
     void add(int index, T element);
 
-//    T remove(int index);
+    T removeAt(int index);
     
     // Search Operations
     int indexOf(Object o);
