@@ -11,7 +11,7 @@ public class GreitaveikosTyrimas {
 
     public static final String FINISH_COMMAND = "finish";
 
-    private static final String[] TYRIMU_VARDAI = {"addLin", "addUn", "contLin", "contUn", "getLin", "getUn", "insLin", "insUn"};
+    private static final String[] TYRIMU_VARDAI = {"addLin", "addUn", "contLin", "contUn", "getLin", "getUn", "insLin", "insUn", "iterLin", "iterUn"};
     private static final int[] TIRIAMI_KIEKIAI = {10000, 20000, 40000, 80000};
 
     private final BlockingQueue resultsLogger = new SynchronousQueue();
@@ -79,6 +79,14 @@ public class GreitaveikosTyrimas {
                 unrolledList.add(a, 1);
             }
             tk.finish(TYRIMU_VARDAI[7]);
+            for (Integer a : linkedList) {
+                tempVal &= (a > 0);
+            }
+            tk.finish(TYRIMU_VARDAI[8]);
+            for (Integer a : unrolledList) {
+                tempVal &= (a > 0);
+            }
+            tk.finish(TYRIMU_VARDAI[9]);
             tk.seriesFinish();
 
             // Sanity Check

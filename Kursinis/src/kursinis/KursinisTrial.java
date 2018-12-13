@@ -17,14 +17,42 @@ import java.util.stream.Stream;
  */
 public class KursinisTrial {
 
-    private final static int unrolledArraySize = 6;
+    private final static int unrolledArraySize = 128;
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MemoryConsumptionTests(1000000);
-        TimeConsumptionTests();
+//        MemoryConsumptionTests(1000000);
+//        TimeConsumptionTests();
+        TimeConsumptionTestsExtra(10000000);
+    }
+
+    private static void TimeConsumptionTestsExtra(int dataSize) {
+        // Preparations
+        List<Integer> linkedList = new LinkedList<>();
+        UnrolledLinkedListADT<Integer> unrolledList = new UnrolledLinkedList<>(unrolledArraySize);
+        int[] testVals = IntStream.range(0, dataSize).unordered().toArray();
+        for (int a : testVals) {
+            linkedList.add(a);
+        }
+        for (int a : testVals) {
+            unrolledList.add(a);
+        }
+        int sum = 0;
+
+        long t0 = System.nanoTime();
+        for (Integer val : linkedList) {
+            sum += val;
+        }
+        long t1 = System.nanoTime();
+        for (Integer val : unrolledList) {
+            sum += val;
+        }
+        long t2 = System.nanoTime();
+
+        System.out.printf("Data: %7d, Linked iteration time: %7.4f, Unrolled iteration time: %7.4f, Sum: %7d\n",
+                dataSize, (t1 - t0) / 1e9, (t2 - t1) / 1e9, sum);
     }
 
     private static void TimeConsumptionTests() {
