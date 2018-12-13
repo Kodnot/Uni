@@ -17,16 +17,42 @@ import java.util.stream.Stream;
  */
 public class KursinisTrial {
 
+    private final static int unrolledArraySize = 6;
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         MemoryConsumptionTests(1000000);
+        TimeConsumptionTests();
+    }
+
+    private static void TimeConsumptionTests() {
+        GreitaveikosTyrimas gt = new GreitaveikosTyrimas(unrolledArraySize);
+
+        // Si gija paima rezultatus is greitaveikos tyrimo gijos ir isveda 
+        // juos i taOutput. Gija baigia darbą kai gaunama FINISH_COMMAND     
+        new Thread(() -> {
+            try {
+                String result;
+                while (!(result = gt.getResultsLogger().take())
+                        .equals(GreitaveikosTyrimas.FINISH_COMMAND)) {
+                    System.out.print(result);
+                    gt.getSemaphore().release();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            gt.getSemaphore().release();
+        }, "Greitaveikos_rezultatu_gija").start();
+
+        //Sioje gijoje atliekamas greitaveikos tyrimas
+        new Thread(() -> gt.pradetiTyrima(), "Greitaveikos_tyrimo_gija").start();
     }
 
     private static void MemoryConsumptionTests(int dataSize) {
         double sideMemoryConsumedMegabytes = MemStats.getUsedMegabytes();
-        final int unrolledArraySize = 6;
         // You can see the memory consumption of unrolled list becomes less with array size
         // Set to ~6
 
