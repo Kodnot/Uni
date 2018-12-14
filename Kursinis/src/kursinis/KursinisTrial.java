@@ -24,20 +24,24 @@ public class KursinisTrial {
      */
     public static void main(String[] args) {
 //        MemoryConsumptionTests(1000000);
-//        TimeConsumptionTests();
-        TimeConsumptionTestsExtra(10000000);
+        TimeConsumptionTests();
+//        TimeConsumptionTestsExtra(10000000);
     }
 
     private static void TimeConsumptionTestsExtra(int dataSize) {
         // Preparations
         List<Integer> linkedList = new LinkedList<>();
         UnrolledLinkedListADT<Integer> unrolledList = new UnrolledLinkedList<>(unrolledArraySize);
+        UnrolledLinkedListSpecialized specializedUnrolled = new UnrolledLinkedListSpecialized(unrolledArraySize);
         int[] testVals = IntStream.range(0, dataSize).unordered().toArray();
         for (int a : testVals) {
             linkedList.add(a);
         }
         for (int a : testVals) {
             unrolledList.add(a);
+        }
+        for (int a : testVals) {
+            specializedUnrolled.add(a);
         }
         int sum = 0;
 
@@ -50,9 +54,14 @@ public class KursinisTrial {
             sum += val;
         }
         long t2 = System.nanoTime();
+        UnrolledLinkedListSpecialized.UnrolledIteratorSpecialized it = specializedUnrolled.iterator();
+        while (it.hasNext()) {
+            sum += it.next();
+        }
+        long t3 = System.nanoTime();
 
-        System.out.printf("Data: %7d, Linked iteration time: %7.4f, Unrolled iteration time: %7.4f, Sum: %7d\n",
-                dataSize, (t1 - t0) / 1e9, (t2 - t1) / 1e9, sum);
+        System.out.printf("Data: %7d, Linked iteration time: %7.4f, Unrolled iteration time: %7.4f, Specialized iteration time: %7.5f, Sum: %7d\n",
+                dataSize, (t1 - t0) / 1e9, (t2 - t1) / 1e9, (t3 - t2) / 1e9, sum);
     }
 
     private static void TimeConsumptionTests() {
