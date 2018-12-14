@@ -14,11 +14,15 @@ public interface UnrolledLinkedListADT<T> extends Iterable<T> {
     // Query Operations
     int size();
 
+    int getNodeCount();
+
     boolean isEmpty();
 
     boolean contains(Object element);
 
     Object[] toArray();
+
+    void printElements();
 
     /**
      * Returns an array of the provided type with all the elements of this

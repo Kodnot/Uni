@@ -308,6 +308,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         return rez;
     }
 
+    @Override
     public int getNodeCount() {
         int rez = 0;
         Node cur = startPos;
@@ -318,6 +319,7 @@ public class UnrolledLinkedList<T> implements UnrolledLinkedListADT<T> {
         return rez;
     }
 
+    @Override
     public void printElements() {
         Node cur = startPos;
         System.out.print("(n=" + elementCount + ") ");
