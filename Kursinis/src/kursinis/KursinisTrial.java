@@ -1,15 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kursinis;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  *
@@ -24,8 +17,8 @@ public class KursinisTrial {
      */
     public static void main(String[] args) {
 //        MemoryConsumptionTests(1000000);
-        TimeConsumptionTests();
-//        TimeConsumptionTestsExtra(10000000);
+//        TimeConsumptionTests();
+        TimeConsumptionTestsExtra(10000000);
     }
 
     private static void TimeConsumptionTestsExtra(int dataSize) {

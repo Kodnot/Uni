@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kursinis;
 
 /**
@@ -43,8 +38,6 @@ public interface UnrolledLinkedListADT<T> extends Iterable<T> {
     // Skipped bulk modifications because they are boring and not required for the demo
     // The performance of these methods should not differ drastically from a normal linked list
     // (Same diff as observed with individual contains() or add() etc. calls)
-    // TODO: Implementing a merge sort could be here could be interesting
-    // To be fair, you won't use this if you need to keep the values sorted. Inefficient.
     void clear();
 
     // Positional Access Operations

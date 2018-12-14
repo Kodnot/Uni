@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package kursinis;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
 /**
- *
+ * An unrolledLinkedList specialized implementation designed to test how much impact boxing has on its performance
+ * Only partial implementation was specialized, because only iteration was needed for testing
  * @author audri
  */
 public class UnrolledLinkedListSpecialized {
@@ -161,118 +157,115 @@ public class UnrolledLinkedListSpecialized {
             endPos = node;
         }
     }
-//
-//    @Override
-//    public boolean remove(Object element) {
-//        Node cur = startPos;
-//        boolean found = false;
-//        while (cur != null && !found) {
-//            for (int i = 0; i < cur.elementCount; ++i) {
-//                if (!found && cur.elements[i].equals(element)) {
-//                    elementCount--;
-//                    found = true;
-//                }
-//                if (found && i + 1 < cur.elementCount) {
-//                    cur.elements[i] = cur.elements[i + 1];
-//                }
-//            }
-//            if (found) {
-//                cur.elementCount--;
-//            } else {
-//                cur = cur.next;
-//            }
-//        }
-//
-//        // Nothing to balance
-//        if (!found || cur.next == null) {
-//            return found;
-//        }
-//
-//        balanceAfterRemove(cur);
-//
-//        return found;
-//    }
-//
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public T removeAt(int index) {
-//        if (index < 0 || index >= elementCount) {
-//            throw new IndexOutOfBoundsException("Index has to be between 0 (inclusive) and list size (exclusive).");
-//        }
-//
-//        Node cur = startPos;
-//        int curIndex = 0;
-//        int valIndex = 0;
-//        while (cur != null) {
-//            if (index - curIndex < cur.elementCount) {
-//                valIndex = index - curIndex;
-//                break;
-//            }
-//            curIndex += cur.elementCount;
-//            cur = cur.next;
-//        }
-//
-//        // Remove the element
-//        elementCount--;
-//        T removedElement = (T) cur.elements[valIndex];
-//        // Remove element
-//        for (int i = valIndex; i < cur.elementCount - 1; ++i) {
-//            cur.elements[i] = cur.elements[i + 1];
-//        }
-//        cur.elementCount--;
-//
-//        // Balance if need be
-//        // Nothing to balance
-//        if (cur.next == null) {
-//            return removedElement;
-//        }
-//
-//        balanceAfterRemove(cur);
-//
-//        return (T) removedElement;
-//    }
-//
-//    private void balanceAfterRemove(Node cur) {
-//        int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
-//        if (movedDataCount <= 0) {
-//            return;
-//        }
-//
-//        movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
-//        int i = cur.elementCount, j = 0;
-//        for (; j < movedDataCount; ++j) {
-//            cur.elements[i++] = cur.next.elements[j];
-//            if (j + movedDataCount < cur.next.elementCount) {
-//                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
-//            }
-//        }
-//
-//        // Finish shifting elements in next node
-//        for (; j < cur.next.elementCount; ++j) {
-//            if (j + movedDataCount < cur.next.elementCount) {
-//                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
-//            }
-//        }
-//        cur.next.elementCount -= movedDataCount;
-//        cur.elementCount += movedDataCount;
-//
-//        if (cur.next.elementCount < (maxElementCount + 1) / 2) {
-//            // Merge nodes
-//            for (j = 0; j < cur.next.elementCount; ++j) {
-//                cur.elements[i++] = cur.next.elements[j];
-//            }
-//            cur.elementCount += cur.next.elementCount;
-//            if (cur.next == endPos) {
-//                endPos = cur;
-//            }
-//            cur.next = cur.next.next;
-//        }
-//    }
-//
-//    @Override
-//    public boolean contains(Object element) {
-//        return this.indexOf(element) >= 0;
-//    }
+
+    public boolean remove(int element) {
+        Node cur = startPos;
+        boolean found = false;
+        while (cur != null && !found) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                if (!found && cur.elements[i] == element) {
+                    elementCount--;
+                    found = true;
+                }
+                if (found && i + 1 < cur.elementCount) {
+                    cur.elements[i] = cur.elements[i + 1];
+                }
+            }
+            if (found) {
+                cur.elementCount--;
+            } else {
+                cur = cur.next;
+            }
+        }
+
+        // Nothing to balance
+        if (!found || cur.next == null) {
+            return found;
+        }
+
+        balanceAfterRemove(cur);
+
+        return found;
+    }
+
+    @SuppressWarnings("unchecked")
+    public int removeAt(int index) {
+        if (index < 0 || index >= elementCount) {
+            throw new IndexOutOfBoundsException("Index has to be between 0 (inclusive) and list size (exclusive).");
+        }
+
+        Node cur = startPos;
+        int curIndex = 0;
+        int valIndex = 0;
+        while (cur != null) {
+            if (index - curIndex < cur.elementCount) {
+                valIndex = index - curIndex;
+                break;
+            }
+            curIndex += cur.elementCount;
+            cur = cur.next;
+        }
+
+        // Remove the element
+        elementCount--;
+        int removedElement = cur.elements[valIndex];
+        // Remove element
+        for (int i = valIndex; i < cur.elementCount - 1; ++i) {
+            cur.elements[i] = cur.elements[i + 1];
+        }
+        cur.elementCount--;
+
+        // Balance if need be
+        // Nothing to balance
+        if (cur.next == null) {
+            return removedElement;
+        }
+
+        balanceAfterRemove(cur);
+
+        return removedElement;
+    }
+
+    private void balanceAfterRemove(Node cur) {
+        int movedDataCount = (maxElementCount + 1) / 2 - cur.elementCount;
+        if (movedDataCount <= 0) {
+            return;
+        }
+
+        movedDataCount = Math.min(movedDataCount, cur.next.elementCount);
+        int i = cur.elementCount, j = 0;
+        for (; j < movedDataCount; ++j) {
+            cur.elements[i++] = cur.next.elements[j];
+            if (j + movedDataCount < cur.next.elementCount) {
+                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
+            }
+        }
+
+        // Finish shifting elements in next node
+        for (; j < cur.next.elementCount; ++j) {
+            if (j + movedDataCount < cur.next.elementCount) {
+                cur.next.elements[j] = cur.next.elements[j + movedDataCount];
+            }
+        }
+        cur.next.elementCount -= movedDataCount;
+        cur.elementCount += movedDataCount;
+
+        if (cur.next.elementCount < (maxElementCount + 1) / 2) {
+            // Merge nodes
+            for (j = 0; j < cur.next.elementCount; ++j) {
+                cur.elements[i++] = cur.next.elements[j];
+            }
+            cur.elementCount += cur.next.elementCount;
+            if (cur.next == endPos) {
+                endPos = cur;
+            }
+            cur.next = cur.next.next;
+        }
+    }
+
+    public boolean contains(int element) {
+        return this.indexOf(element) >= 0;
+    }
 //
 //    @Override
 //    public Object[] toArray() {
@@ -358,38 +351,37 @@ public class UnrolledLinkedListSpecialized {
 //        return null;
 //    }
 //
-//    @Override
-//    public int indexOf(Object o) {
-//        Node cur = startPos;
-//        int index = 0;
-//        while (cur != null) {
-//            for (int i = 0; i < cur.elementCount; ++i) {
-//                if (cur.elements[i].equals(o)) {
-//                    return index;
-//                }
-//                index++;
-//            }
-//            cur = cur.next;
-//        }
-//        return -1;
-//    }
-//
-//    @Override
-//    public int lastIndexOf(Object o) {
-//        Node cur = startPos;
-//        int index = 0;
-//        int rezIndex = -1;
-//        while (cur != null) {
-//            for (int i = 0; i < cur.elementCount; ++i) {
-//                if (cur.elements[i].equals(o)) {
-//                    rezIndex = index;
-//                }
-//                index++;
-//            }
-//            cur = cur.next;
-//        }
-//        return rezIndex;
-//    }
+
+    public int indexOf(int o) {
+        Node cur = startPos;
+        int index = 0;
+        while (cur != null) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                if (cur.elements[i] == o) {
+                    return index;
+                }
+                index++;
+            }
+            cur = cur.next;
+        }
+        return -1;
+    }
+
+    public int lastIndexOf(int o) {
+        Node cur = startPos;
+        int index = 0;
+        int rezIndex = -1;
+        while (cur != null) {
+            for (int i = 0; i < cur.elementCount; ++i) {
+                if (cur.elements[i] == o) {
+                    rezIndex = index;
+                }
+                index++;
+            }
+            cur = cur.next;
+        }
+        return rezIndex;
+    }
 
     public UnrolledIteratorSpecialized iterator() {
         return new UnrolledIteratorSpecialized(startPos);
