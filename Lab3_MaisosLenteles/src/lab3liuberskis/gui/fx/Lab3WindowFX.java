@@ -130,9 +130,10 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
                     MESSAGES.getString("button1"),
                     MESSAGES.getString("button2"),
                     MESSAGES.getString("button3"),
-                    MESSAGES.getString("button4")}, 1, 4);
+                    MESSAGES.getString("button4"),
+                    MESSAGES.getString("button5")}, 1, 5);
         paneButtons.getButtons().forEach((btn) -> btn.setOnAction(this));
-        IntStream.of(1, 3).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
+        IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
 
         // Viskas sudedama į rožinės spalvos pane
         GridPane.setVgrow(taInput, Priority.ALWAYS);
@@ -301,7 +302,7 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
                 if (source instanceof Button) {
                     handleButtons(source);
                 } else if (source instanceof ComboBox && (source.equals(cmbCollisionTypes) || source.equals(cmbHashFunctions))) {
-                    IntStream.of(1, 3).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
+                    IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
                 }
             } catch (MyException e) {
                 KsFX.ounerr(taEvents, MESSAGES.getString(e.getMessage()), e.getValue());
@@ -322,13 +323,15 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
         } else if (source.equals(paneButtons.getButtons().get(2))) {
             mapEfficiency();
         } else if (source.equals(paneButtons.getButtons().get(3))) {
-            KsFX.ounerr(taEvents, MESSAGES.getString("notImplemented"));
+            mapRemove();
+        } else if (source.equals(paneButtons.getButtons().get(4))) {
+            mapFind();
         }
     }
 
     public void mapGeneration(String filePath) {
-        // Išjungiami 2 ir 4 mygtukai
-        IntStream.of(1, 3).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
+        // Išjungiami 2, 4 ir 5 mygtukai
+        IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
         // Duomenų nuskaitymas iš parametrų lentelės (žalios)
         readMapParameters();
         // Sukuriamas tuščias atvaizdis priklausomai nuo kolizijų tipo
@@ -358,8 +361,8 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
         table.setItems(FXCollections.observableArrayList(modelList));
         // Atnaujinamai maišos lentelės parametrai (geltona lentelė)
         updateHashtableParameters(false);
-        // Įjungiami 2 ir 4 mygtukai
-        IntStream.of(1, 3).forEach(p -> paneButtons.getButtons().get(p).setDisable(false));
+        // Įjungiami 2, 4 ir 5 mygtukai
+        IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(false));
     }
 
     public void mapAdd() {
@@ -403,6 +406,35 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
         new Thread(() -> gt.pradetiTyrima(), "Greitaveikos_tyrimo_gija").start();
     }
 
+    public void mapRemove() {
+        List<TextField> tfs = paneParam3.getTfOfTable();
+        String removeKey = tfs.get(0).getText();
+        Student removedElement = map.remove(removeKey);
+        // If no such element exists
+        if (removedElement == null) {
+            KsFX.oun(taEvents, MESSAGES.getString("msg8"));
+            return;
+        }
+
+        table.formTable(map.getMaxChainSize() * 2 + 1, colWidth);
+        String[][] modelList = map.getModelList(paneParam1.getTfOfTable().get(5).getText());
+        table.setItems(FXCollections.observableArrayList(modelList));
+        updateHashtableParameters(true);
+        KsFX.oun(taEvents, removedElement, MESSAGES.getString("msg7"));
+    }
+
+    public void mapFind() {
+        List<TextField> tfs = paneParam3.getTfOfTable();
+        String findKey = tfs.get(0).getText();
+        if (map.contains(findKey)) {
+            Student element = map.get(findKey);
+            KsFX.oun(taEvents, element, MESSAGES.getString("msg9"));
+            return;
+        }
+
+        KsFX.oun(taEvents, MESSAGES.getString("msg8"));
+    }
+
     private void readMapParameters() {
         int i = 0;
         List<TextField> tfs = paneParam1.getTfOfTable();
@@ -440,7 +472,7 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
             // ...
             // Programuojant kitus kolizijų sprendimo metodus reikia papildyti switch sakinį
             default:
-                IntStream.of(1, 3).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
+                IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
                 throw new MyException("notImplemented");
         }
     }

@@ -17,7 +17,7 @@ import javafx.scene.input.KeyCombination;
  */
 public abstract class MenuFX extends MenuBar implements EventHandler<ActionEvent> {
 
-    private static final ResourceBundle MESSAGES = ResourceBundle.getBundle("laborai.gui.messages");
+    private static final ResourceBundle MESSAGES = ResourceBundle.getBundle("lab3liuberskis.gui.messages");
 
     public MenuFX() {
         initComponents();
