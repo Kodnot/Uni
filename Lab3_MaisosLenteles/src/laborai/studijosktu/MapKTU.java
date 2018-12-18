@@ -122,6 +122,20 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
         return get(key) != null;
     }
 
+    public boolean containsValue(V value) {
+        for (int i = 0; i < table.length; ++i) {
+            Node<K, V> cur = table[i];
+            while (cur != null) {
+                if (cur.value.equals(value)) {
+                    return true;
+                }
+                cur = cur.next;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Atvaizdis papildomas nauja pora.
      *
