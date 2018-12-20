@@ -1,11 +1,14 @@
 package lab3liuberskis;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import laborai.studijosktu.HashType;
 import laborai.studijosktu.MapKTUx;
 import laborai.gui.MyException;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.SynchronousQueue;
@@ -16,20 +19,18 @@ import java.util.concurrent.SynchronousQueue;
 public class GreitaveikosTyrimas {
 
     public static final String FINISH_COMMAND = "finishCommand";
-    private static final ResourceBundle MESSAGES = ResourceBundle.getBundle("laborai.gui.messages");
+    private static final float loadFactor = 0.75f;
 
     private final BlockingQueue resultsLogger = new SynchronousQueue();
     private final Semaphore semaphore = new Semaphore(-1);
     private final Timekeeper tk;
 
-    private final String[] TYRIMU_VARDAI = {"add0.75", "add0.25", "rem0.75", "rem0.25", "get0.75", "get0.25"};
-    private final int[] TIRIAMI_KIEKIAI = {10000, 20000, 40000, 80000};
+    private final String[] TYRIMU_VARDAI = {"addKTU", "addCust", "remKTU", "remCust", "getKTU", "getCust"};
+    private final int[] TIRIAMI_KIEKIAI = {10000, 20000, 40000, 80000, -1};
 
     private final MapKTUx<String, Student> studMap
-            = new MapKTUx(new String(), new Student(), 10, 0.75f, HashType.DIVISION);
-    private final MapKTUx<String, Student> studMap2
-            = new MapKTUx(new String(), new Student(), 10, 0.25f, HashType.DIVISION);
-    private final Queue<String> chainsSizes = new LinkedList<>();
+            = new MapKTUx(new String(), new Student(), 10, loadFactor, HashType.DIVISION);
+    private final MapKTUOA<String, Student> studMapCustom = new MapKTUOA<>(10, loadFactor, HashType.DIVISION);
 
     public GreitaveikosTyrimas() {
         semaphore.release();
@@ -39,6 +40,7 @@ public class GreitaveikosTyrimas {
     public void pradetiTyrima() {
         try {
             SisteminisTyrimas();
+            TyrimasSuZodynu();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         } catch (Exception ex) {
@@ -46,15 +48,64 @@ public class GreitaveikosTyrimas {
         }
     }
 
+    public void TyrimasSuZodynu() throws InterruptedException, IOException {
+        try {
+            Path path = Paths.get(".").resolve("zodynas.txt");
+            Charset charset = Charset.defaultCharset();
+            List<String> lines = Files.readAllLines(path, charset);
+
+            MapKTUx<String, String> ktuMap = new MapKTUx<>(new String(), new String(), 10, loadFactor, HashType.DIVISION);
+            MapKTUOA<String, String> myMap = new MapKTUOA<>(10, loadFactor, HashType.DIVISION);
+            tk.startAfterPause();
+            tk.start();
+
+            for (int i = 0; i < lines.size(); i++) {
+                ktuMap.put(lines.get(i), lines.get(i));
+            }
+            tk.finish(TYRIMU_VARDAI[0]);
+
+            for (int i = 0; i < lines.size(); i++) {
+                myMap.put(lines.get(i), lines.get(i));
+            }
+            tk.finish(TYRIMU_VARDAI[1]);
+
+            for (String s : lines) {
+                ktuMap.remove(s);
+            }
+            tk.finish(TYRIMU_VARDAI[2]);
+
+            for (String s : lines) {
+                myMap.remove(s);
+            }
+            tk.finish(TYRIMU_VARDAI[3]);
+
+            for (String s : lines) {
+                ktuMap.get(s);
+            }
+            tk.finish(TYRIMU_VARDAI[4]);
+
+            for (String s : lines) {
+                myMap.get(s);
+            }
+            tk.finish(TYRIMU_VARDAI[5]);
+            tk.seriesFinish();
+
+        } catch (MyException e) {
+            tk.logResult(e.getMessage());
+        }
+    }
+
     public void SisteminisTyrimas() throws InterruptedException {
         try {
-            chainsSizes.add(MESSAGES.getString("msg4"));
-            chainsSizes.add("   kiekis      " + TYRIMU_VARDAI[0] + "   " + TYRIMU_VARDAI[1]);
             for (int k : TIRIAMI_KIEKIAI) {
+                if (k == -1) {
+                    TyrimasSuZodynu();
+                    continue;
+                }
                 Student[] studArray = StudentGenerator.generateStudents(k);
                 String[] studIdArray = StudentGenerator.generateStudentIds(k);
                 studMap.clear();
-                studMap2.clear();
+                studMapCustom.clear();
                 tk.startAfterPause();
                 tk.start();
 
@@ -63,41 +114,37 @@ public class GreitaveikosTyrimas {
                 }
                 tk.finish(TYRIMU_VARDAI[0]);
 
-                String str = "   " + k + "          " + studMap.getMaxChainSize();
                 for (int i = 0; i < k; i++) {
-                    studMap2.put(studIdArray[i], studArray[i]);
+                    studMapCustom.put(studIdArray[i], studArray[i]);
                 }
                 tk.finish(TYRIMU_VARDAI[1]);
 
-                str += "         " + studMap2.getMaxChainSize();
-                chainsSizes.add(str);
                 for (String s : studIdArray) {
                     studMap.remove(s);
                 }
                 tk.finish(TYRIMU_VARDAI[2]);
 
                 for (String s : studIdArray) {
-                    studMap2.remove(s);
+                    studMapCustom.remove(s);
                 }
                 tk.finish(TYRIMU_VARDAI[3]);
 
                 for (String s : studIdArray) {
-                    studMap2.get(s);
+                    studMapCustom.get(s);
                 }
                 tk.finish(TYRIMU_VARDAI[4]);
 
                 for (String s : studIdArray) {
-                    studMap2.get(s);
+                    studMapCustom.get(s);
                 }
                 tk.finish(TYRIMU_VARDAI[5]);
                 tk.seriesFinish();
             }
 
-            StringBuilder sb = new StringBuilder();
-            chainsSizes.stream().forEach(p -> sb.append(p).append(System.lineSeparator()));
-            tk.logResult(sb.toString());
             tk.logResult(FINISH_COMMAND);
         } catch (MyException e) {
+            tk.logResult(e.getMessage());
+        } catch (IOException e) {
             tk.logResult(e.getMessage());
         }
     }
