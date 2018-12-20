@@ -335,7 +335,7 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
         return maxChainSize;
     }
 
-    public int getAverageChainSize() {
+    public float getAverageChainSize() {
         int sum = 0;
         for (int i = 0; i < table.length; ++i) {
             int chainLength = 0;
@@ -346,7 +346,7 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
             }
             sum += chainLength;
         }
-        return chainsCounter == 0 ? 0 : sum / chainsCounter;
+        return chainsCounter == 0 ? 0 : sum / (float) chainsCounter;
     }
 
     public int getEmptyElementCount() {
