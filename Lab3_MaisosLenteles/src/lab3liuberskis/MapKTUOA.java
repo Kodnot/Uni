@@ -11,6 +11,8 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
     public static final float DEFAULT_LOAD_FACTOR = 0.75f;
     public static final HashType DEFAULT_HASH_TYPE = HashType.DIVISION;
 
+    protected final Entry SENTINEL = new Entry();
+
     // Maišos lentelė
     protected Entry<K, V>[] table;
     // Lentelėje esančių raktas-reikšmė porų kiekis
@@ -22,14 +24,8 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
     //--------------------------------------------------------------------------
     //  Maišos lentelės įvertinimo parametrai
     //--------------------------------------------------------------------------
-    // Maksimalus suformuotos maišos lentelės grandinėlės ilgis
-    protected int maxChainSize = 0;
     // Permaišymų kiekis
     protected int rehashesCounter = 0;
-    // Paskutinės patalpintos poros grandinėlės indeksas maišos lentelėje
-    protected int lastUpdatedChain = 0;
-    // Lentelės grandinėlių skaičius     
-    protected int chainsCounter = 0;
     // Einamas poros indeksas maišos lentelėje
     protected int index = 0;
 
@@ -94,10 +90,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
         Arrays.fill(table, null);
         size = 0;
         index = 0;
-        lastUpdatedChain = 0;
-        maxChainSize = 0;
         rehashesCounter = 0;
-        chainsCounter = 0;
     }
 
     /**
@@ -114,11 +107,8 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
     public boolean containsValue(V value) {
         for (int i = 0; i < table.length; ++i) {
             Entry<K, V> cur = table[i];
-            while (cur != null) {
-                if (cur.value.equals(value)) {
-                    return true;
-                }
-                cur = cur.next;
+            if (cur != null && cur.value.equals(value)) {
+                return true;
             }
         }
 
@@ -137,24 +127,22 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
         if (key == null || value == null) {
             throw new IllegalArgumentException("Key or value is null in put(Key key, Value value)");
         }
-        index = hash(key, ht);
-        if (table[index] == null) {
-            chainsCounter++;
+
+        int index = findPosition(key);
+        if (index == -1) {
+            rehash();
+            put(key, value);
+            return value;
         }
 
-        Entry<K, V> node = getInChain(key, table[index]);
-        if (node == null) {
-            table[index] = new Entry<>(key, value, table[index]);
+        if (table[index] == null) {
+            table[index] = new Entry(key, value);
             size++;
-
             if (size > table.length * loadFactor) {
-                rehash(table[index]);
-            } else {
-                lastUpdatedChain = index;
+                rehash();
             }
         } else {
-            node.value = value;
-            lastUpdatedChain = index;
+            table[index].value = value;
         }
 
         return value;
@@ -173,9 +161,8 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
             throw new IllegalArgumentException("Key is null in get(Key key)");
         }
 
-        index = hash(key, ht);
-        Entry<K, V> node = getInChain(key, table[index]);
-        return (node != null) ? node.value : null;
+        index = findPosition(key);
+        return index == -1 ? null : table[index].value;
     }
 
     /**
@@ -190,52 +177,63 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
             throw new IllegalArgumentException("Key is null in remove(Key key)");
         }
 
-        index = hash(key, ht);
-        Entry<K, V> previous = null;
-        for (Entry<K, V> n = table[index]; n != null; n = n.next) {
-            if ((n.key).equals(key)) {
-                if (previous == null) {
-                    table[index] = n.next;
-                } else {
-                    previous.next = n.next;
-                }
-                size--;
-
-                if (table[index] == null) {
-                    chainsCounter--;
-                }
-                return n.value;
-            }
-            previous = n;
+        int index = findPosition(key);
+        if (index == -1) {
+            return null;
         }
-        return null;
+
+        size--;
+        V rez = table[index].value;
+        table[index] = SENTINEL;
+        return rez;
+    }
+
+    private int hash(K key, HashType hashType) {
+        int h = key.hashCode();
+        switch (hashType) {
+            case DIVISION:
+                return Math.abs(h) % table.length;
+            case MULTIPLICATION:
+                double k = (Math.sqrt(5) - 1) / 2;
+                return (int) (((k * Math.abs(h)) % 1) * table.length);
+            case JCF7:
+                h ^= (h >>> 20) ^ (h >>> 12);
+                h = h ^ (h >>> 7) ^ (h >>> 4);
+                return h & (table.length - 1);
+            case JCF8:
+                h = h ^ (h >>> 16);
+                return h & (table.length - 1);
+            default:
+                return Math.abs(h) % table.length;
+        }
     }
 
     /**
      * Permaišymas
-     *
-     * @param node
      */
-    private void rehash(Entry<K, V> node) {
-        MapKTUOA mapKTU
-                = new MapKTUOA(table.length * 2, loadFactor, ht);
+    private void rehash() {
+        MapKTUOA mapKTU = new MapKTUOA(table.length * 2, loadFactor, ht);
         for (int i = 0; i < table.length; i++) {
-            while (table[i] != null) {
-                if (table[i].equals(node)) {
-                    lastUpdatedChain = i;
-                }
+            if (table[i] != null) {
                 mapKTU.put(table[i].key, table[i].value);
-                table[i] = table[i].next;
             }
         }
         table = mapKTU.table;
-        maxChainSize = mapKTU.maxChainSize;
-        chainsCounter = mapKTU.chainsCounter;
         rehashesCounter++;
     }
 
     private int findPosition(K key) {
-        
+        int index = hash(key, ht);
+        int index0 = index;
+        int i = 0;
+        for (int j = 0; j < table.length; ++j) {
+            if (table[index] == null || table[index].key.equals(key)) {
+                return index;
+            }
+            i++;
+            index = (index0 + i * i) % table.length;
+        }
+        return -1;
     }
 
     // TODO: Should this really be two-dimensional with this impl?
