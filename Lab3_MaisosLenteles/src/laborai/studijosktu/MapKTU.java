@@ -335,6 +335,31 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
         return maxChainSize;
     }
 
+    public int getAverageChainSize() {
+        int sum = 0;
+        for (int i = 0; i < table.length; ++i) {
+            int chainLength = 0;
+            Node<K, V> node = table[i];
+            while (node != null) {
+                chainLength++;
+                node = node.next;
+            }
+            sum += chainLength;
+        }
+        return chainsCounter == 0 ? 0 : sum / chainsCounter;
+    }
+
+    public int getEmptyElementCount() {
+        int count = 0;
+        for (int i = 0; i < table.length; ++i) {
+            Node<K, V> node = table[i];
+            if (node == null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     /**
      * Grąžina formuojant maišos lentelę įvykusių permaišymų kiekį.
      *
