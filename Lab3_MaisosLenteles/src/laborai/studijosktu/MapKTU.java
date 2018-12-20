@@ -434,6 +434,16 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
     }
 
     /**
+     * Returns number of empty elements in array of hashtable
+     *
+     * @return
+     */
+    // Why do they even ask for this...
+    public int numberOfEmpties() {
+        return getEmptyElementCount();
+    }
+
+    /**
      * Grąžina formuojant maišos lentelę įvykusių permaišymų kiekį.
      *
      * @return Permaišymų kiekis.
