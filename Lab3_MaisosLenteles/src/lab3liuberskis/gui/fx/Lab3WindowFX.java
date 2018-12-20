@@ -39,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lab3liuberskis.GreitaveikosTyrimas;
+import lab3liuberskis.MapKTUOAx;
 import lab3liuberskis.Student;
 import lab3liuberskis.StudentGenerator;
 import lab3liuberskis.gui.MyException;
@@ -95,7 +96,7 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
     private int sizeOfInitialSubSet, sizeOfGenSet, colWidth, initialCapacity;
     private float loadFactor;
     private HashType ht = HashType.DIVISION;
-    private final StudentGenerator autoGamyba = new StudentGenerator();
+    private final StudentGenerator studGenerator = new StudentGenerator();
 
     public Lab3WindowFX(Stage stage) {
         this.stage = stage;
@@ -338,10 +339,10 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
         createMap();
         // Jei failas nenurodytas - generuojami automobiliai ir talpinami atvaizdyje
         if (filePath == null) {
-            Student[] studArray = autoGamyba.generateAndAssignStudents(sizeOfGenSet, sizeOfInitialSubSet);
+            Student[] studArray = studGenerator.generateAndAssignStudents(sizeOfGenSet, sizeOfInitialSubSet);
             for (Student a : studArray) {
                 map.put(
-                        autoGamyba.getStudentId(), //raktas
+                        studGenerator.getStudentId(), //raktas
                         a);
             }
             KsFX.ounArgs(taEvents, MESSAGES.getString("msg1"), map.size());
@@ -366,9 +367,9 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
     }
 
     public void mapAdd() {
-        Student a = autoGamyba.assignStudent();
+        Student a = studGenerator.assignStudent();
         map.put(
-                autoGamyba.getStudentId(), // Raktas
+                studGenerator.getStudentId(), // Raktas
                 a);
         table.formTable(map.getMaxChainSize() * 2 + 1, colWidth);
         String[][] modelList = map.getModelList(paneParam1.getTfOfTable().get(5).getText());
@@ -469,6 +470,10 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
             case 0:
                 map = new MapKTUx<>(new String(), new Student(), initialCapacity, loadFactor, ht);
                 break;
+            case 2:
+                map = new MapKTUOAx<>(new String(), new Student(), initialCapacity, loadFactor, ht);
+                break;
+
             // ...
             // Programuojant kitus kolizijų sprendimo metodus reikia papildyti switch sakinį
             default:
