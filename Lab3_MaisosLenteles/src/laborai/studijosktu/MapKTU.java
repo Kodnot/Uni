@@ -1,6 +1,8 @@
 package laborai.studijosktu;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Porų ("maping'ų") raktas-reikšmė objektų kolekcijos - atvaizdžio realizacija
@@ -122,7 +124,16 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
         return get(key) != null;
     }
 
+    /**
+     * Returns true if this map maps one or more keys to the specified value.
+     *
+     * @param value
+     * @return
+     */
     public boolean containsValue(V value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Value is null in containsValue(V value)");
+        }
         for (int i = 0; i < table.length; ++i) {
             Node<K, V> cur = table[i];
             while (cur != null) {
@@ -169,6 +180,51 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
         }
 
         return value;
+    }
+
+    /**
+     * If the specified key is not already associated with a value associates it
+     * with the given value and returns null, else returns the current value.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public V putIfAbsent(K key, V value) {
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Key or value is null in putIfAbsent(Key key, Value value)");
+        }
+
+        // Could be done more efficiently, but with more code duplication, so meh
+        V val = get(key);
+        if (val == null) {
+            put(key, value);
+            return null;
+        }
+
+        return val;
+    }
+
+    /**
+     * Replaces all the entries only if currently mapped to the specified value.
+     *
+     * @param oldValue
+     * @param newValue
+     */
+    public void replaceAll(V oldValue, V newValue) {
+        if (oldValue == null || newValue == null) {
+            throw new IllegalArgumentException("Old value or new value is null in replaceAll(V oldValue, V newValue)");
+        }
+
+        for (int i = 0; i < table.length; ++i) {
+            Node<K, V> node = table[i];
+            while (node != null) {
+                if (node.value.equals(oldValue)) {
+                    node.value = newValue;
+                }
+                node = node.next;
+            }
+        }
     }
 
     /**
@@ -323,6 +379,23 @@ public class MapKTU<K, V> implements MapADTp<K, V> {
             }
         }
         return result.toString();
+    }
+
+    /**
+     * Returns a Set of the keys contained in this map.
+     *
+     * @return
+     */
+    public Set<K> keySet() {
+        Set<K> rez = new HashSet<>();
+        for (int i = 0; i < table.length; ++i) {
+            Node<K, V> node = table[i];
+            while (node != null) {
+                rez.add(node.key);
+                node = node.next;
+            }
+        }
+        return rez;
     }
 
     /**
