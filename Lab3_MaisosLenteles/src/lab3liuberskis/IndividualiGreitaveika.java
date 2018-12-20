@@ -30,10 +30,10 @@ public class IndividualiGreitaveika {
     private final String[] TYRIMU_VARDAI = {"putKtu", "putHashSet", "containsKtuOA", "containsKtu"};
     private final int[] TIRIAMI_KIEKIAI = {10000, 20000, 40000, 80000};
 
-    private final MapKTUx<String, Student> studMap
-            = new MapKTUx(new String(), new Student(), 10, loadFactor, HashType.DIVISION);
-    private final MapKTUOA<String, Student> studMapCustom = new MapKTUOA<>(10, loadFactor, HashType.DIVISION);
-    private final HashMap<String, Student> studHashSet = new HashMap<>(10, loadFactor);
+    private final MapKTUx<String, String> map
+            = new MapKTUx(new String(), new String(), 10, loadFactor, HashType.DIVISION);
+    private final MapKTUOA<String, String> customMap = new MapKTUOA<>(10, loadFactor, HashType.DIVISION);
+    private final HashMap<String, String> hashSet = new HashMap<>(10, loadFactor);
 
     public IndividualiGreitaveika() {
         semaphore.release();
@@ -54,31 +54,30 @@ public class IndividualiGreitaveika {
         try {
             boolean controlVal = true;
             for (int k : TIRIAMI_KIEKIAI) {
-                Student[] studArray = StudentGenerator.generateStudents(k);
                 String[] studIdArray = StudentGenerator.generateStudentIds(k);
-                studMap.clear();
-                studMapCustom.clear();
-                studHashSet.clear();
+                map.clear();
+                customMap.clear();
+                hashSet.clear();
                 tk.startAfterPause();
                 tk.start();
 
                 for (int i = 0; i < k; i++) {
-                    studMap.put(studIdArray[i], studArray[i]);
+                    map.put(studIdArray[i], studIdArray[i]);
                 }
                 tk.finish(TYRIMU_VARDAI[0]);
 
                 for (int i = 0; i < k; i++) {
-                    studHashSet.put(studIdArray[i], studArray[i]);
+                    hashSet.put(studIdArray[i], studIdArray[i]);
                 }
                 tk.finish(TYRIMU_VARDAI[1]);
 
                 for (String s : studIdArray) {
-                    controlVal &= studMapCustom.contains(s);
+                    controlVal &= customMap.contains(s);
                 }
                 tk.finish(TYRIMU_VARDAI[2]);
 
                 for (String s : studIdArray) {
-                    controlVal &= studMap.contains(s);
+                    controlVal &= map.contains(s);
                 }
                 tk.finish(TYRIMU_VARDAI[3]);
                 tk.seriesFinish();
