@@ -129,7 +129,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
             throw new IllegalArgumentException("Key or value is null in put(Key key, Value value)");
         }
 
-        int index = findPosition(key);
+        index = findPosition(key);
         if (index == -1) {
             rehash();
             put(key, value);
@@ -178,7 +178,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
             throw new IllegalArgumentException("Key is null in remove(Key key)");
         }
 
-        int index = findPosition(key);
+        index = findPosition(key);
         if (index == -1 || table[index] == null) {
             return null;
         }

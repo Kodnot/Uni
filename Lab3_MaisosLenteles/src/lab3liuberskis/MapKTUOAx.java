@@ -200,7 +200,7 @@ public class MapKTUOAx<K, V> extends MapKTUOA<K, V> implements MapADTx<K, V> {
 
     @Override
     public int getLastUpdatedChain() {
-        return -1;
+        return index;
     }
 
     @Override
