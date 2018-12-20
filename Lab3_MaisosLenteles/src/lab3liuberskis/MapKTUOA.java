@@ -5,6 +5,7 @@ import laborai.studijosktu.HashType;
 import laborai.studijosktu.MapADT;
 import laborai.studijosktu.MapADTp;
 
+//TODO: Add tests
 public class MapKTUOA<K, V> implements MapADT<K, V> {
 
     public static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -162,7 +163,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
         }
 
         index = findPosition(key);
-        return index == -1 ? null : table[index].value;
+        return (index == -1 || table[index] == null || table[index] == SENTINEL ? null : table[index].value);
     }
 
     /**
@@ -178,7 +179,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
         }
 
         int index = findPosition(key);
-        if (index == -1) {
+        if (index == -1 || table[index] == null) {
             return null;
         }
 
@@ -227,7 +228,7 @@ public class MapKTUOA<K, V> implements MapADT<K, V> {
         int index0 = index;
         int i = 0;
         for (int j = 0; j < table.length; ++j) {
-            if (table[index] == null || table[index].key.equals(key)) {
+            if (table[index] != SENTINEL && (table[index] == null || table[index].key.equals(key))) {
                 return index;
             }
             i++;
