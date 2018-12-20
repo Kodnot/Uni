@@ -39,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lab3liuberskis.GreitaveikosTyrimas;
+import lab3liuberskis.IndividualiGreitaveika;
 import lab3liuberskis.MapKTUOAx;
 import lab3liuberskis.Student;
 import lab3liuberskis.StudentGenerator;
@@ -132,7 +133,8 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
                     MESSAGES.getString("button2"),
                     MESSAGES.getString("button3"),
                     MESSAGES.getString("button4"),
-                    MESSAGES.getString("button5")}, 1, 5);
+                    MESSAGES.getString("button5"),
+                    MESSAGES.getString("button6")}, 1, 6);
         paneButtons.getButtons().forEach((btn) -> btn.setOnAction(this));
         IntStream.of(1, 3, 4).forEach(p -> paneButtons.getButtons().get(p).setDisable(true));
 
@@ -327,6 +329,8 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
             mapRemove();
         } else if (source.equals(paneButtons.getButtons().get(4))) {
             mapFind();
+        } else if (source.equals(paneButtons.getButtons().get(5))) {
+            mapIndividualEfficiency();
         }
     }
 
@@ -383,6 +387,35 @@ public class Lab3WindowFX extends BorderPane implements EventHandler<ActionEvent
         paneRight.setDisable(true);
         menuFX.setDisable(true);
         GreitaveikosTyrimas gt = new GreitaveikosTyrimas();
+
+        // Ši gija paima rezultatus iš greitaveikos tyrimo gijos ir išveda 
+        // juos i taEvents. Gija baigia darbą kai gaunama FINISH_COMMAND     
+        new Thread(() -> {
+            try {
+                String result;
+                while (!(result = gt.getResultsLogger().take())
+                        .equals(GreitaveikosTyrimas.FINISH_COMMAND)) {
+                    KsFX.oun(taEvents, result);
+                    gt.getSemaphore().release();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            gt.getSemaphore().release();
+            paneRight.setDisable(false);
+            menuFX.setDisable(false);
+        }, "Greitaveikos_rezultatu_gija").start();
+
+        //Šioje gijoje atliekamas greitaveikos tyrimas
+        new Thread(() -> gt.pradetiTyrima(), "Greitaveikos_tyrimo_gija").start();
+    }
+
+    public void mapIndividualEfficiency() {
+        KsFX.oun(taEvents, "", MESSAGES.getString("msg3"));
+        paneRight.setDisable(true);
+        menuFX.setDisable(true);
+        IndividualiGreitaveika gt = new IndividualiGreitaveika();
 
         // Ši gija paima rezultatus iš greitaveikos tyrimo gijos ir išveda 
         // juos i taEvents. Gija baigia darbą kai gaunama FINISH_COMMAND     
